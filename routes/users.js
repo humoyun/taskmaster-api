@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 
 const User = require("../models/User.js");
-const { registerV, loginV } = require('../lib/validation');
+const { registerV, loginV } = require("../lib/validation");
 
 /**
  * Register a user
@@ -49,23 +49,30 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) return res.send("Email or password is wrong !").status(400);
-  
+
     // salt [hash password]
     const validPsw = await bcrypt.compare(req.body.password, user.password);
     if (!validPsw) return res.send("Email or password is wrong !!").status(400);
-  
+
     // create token
-    const token = jwt.sign({ 
-      _id: user._id
-      //exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 1 day exp
-    }, process.env.TOKEN_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign(
+      {
+        _id: user._id
+        //exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 1 day exp
+      },
+      process.env.TOKEN_SECRET,
+      { expiresIn: "24h" }
+    );
 
     res.header("auth-token", token);
     res.send({ token });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 });
 
+// router.post('/profile', async (req, res) => {
+
+// })
 
 module.exports = router;
