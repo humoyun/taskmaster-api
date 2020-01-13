@@ -3,17 +3,19 @@ const models = {};
 class User {
   constructor() {
     this.id = ""; // primary
-    this.email = "";
-    this.username = "";
-    this.firstName = "";
-    this.secondName = "";
+    this.email = "humoyun@gmail.com";
+    this.username = "humoyun_ahmad";
+    this.firstName = "Humoyun";
+    this.secondName = "Ahmad";
     this.location = "USA";
     this.geolocation = { lat: 123.32, lng: 34.3 };
     this.verified = false;
-    this.website = "";
-    this.bio = "";
-    this.role = "";
-    this.company = "";
+    this.role = "admin";
+    this.info = {
+      website: "",
+      bio: "",
+      company: ""
+    };
     this.createdAt = new Date().toISOString();
     this.updatedAt = new Date().toISOString();
     this.lastLogin = new Date().toISOString();
@@ -68,8 +70,7 @@ class Task {
     this.desc = "some desciption of the task";
     this.status = ["new", "assigned", "inprogress", "resolved", "closed"];
     this.priority = ["high", "medium", "low"];
-    this.type = ["bug", "story", "task"];
-    this.unread = true;
+    this.type = ["bug", "task"];
     this.flagged = true;
     this.estimatedTime = "5 units";
     this.createdAt = new Date().toISOString();
@@ -127,10 +128,14 @@ class Tag {
 //   }
 // }
 
-class Notification {
+class Activity {
   constructor() {
     this.id = ""; // primary
+    this.referId = ""; // foreign id
+    this.content = "";
+    this.marked = false;
     this.type = ["comment", "task", "user", "..."]; // primary
+    this.subtype = ["edit", "created", "status changed"];
   }
 }
 
@@ -142,6 +147,6 @@ models.Task = Task;
 models.Attach = Attach;
 models.Tag = Tag;
 models.Address = Address;
-models.Notification = Notification;
+models.Activity = Activity;
 
 exports.models = models;

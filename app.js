@@ -1,5 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const PORT = process.env.PORT || 3003;
 
@@ -12,13 +12,11 @@ const tasksRouter = require("./routes/tasks.js");
 const projectsRouter = require("./routes/projects.js");
 const teamsRouter = require("./routes/teams.js");
 
-
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
-  console.log("connected to mongodb on MongoDBAtlas");
-});
+// mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
+//   console.log("connected to mongodb on MongoDBAtlas");
+// });
 
 const app = express();
-
 /**
  *
  * Middleware
