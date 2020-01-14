@@ -87,7 +87,7 @@ exports.delete = (data, tableName, cond) => {
     values.push(data[key]);
   });
 
-  let text = `UPDATE ${tableName} SET ${updates}`;
+  let text = `DELETE FROM ${tableName} WHERE ${updates}`;
   if (cond) text += `WHERE ${cond}`;
   text += " RETURNING *";
 
