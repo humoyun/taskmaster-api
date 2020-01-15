@@ -50,7 +50,7 @@ module.exports = {
    */
   findUser: async user => {
     let resp;
-    const text = "SELECT * FROM member WHERE email = $1";
+    const text = "SELECT * FROM members WHERE email = $1";
     const values = [user.email];
 
     try {
@@ -99,6 +99,30 @@ module.exports = {
     } catch (err) {
       console.error(err);
     }
+
+    return resp.rows;
+  },
+
+  /**
+   *
+   */
+  findAll: async (entity, fields) => {
+    let resp;
+    let fieldsPlaceholder = "*";
+
+    if (fields) {
+      fieldsPlaceholder = fields.join(", ");
+    }
+    const text = `SELECT ${fieldsPlaceholder} FROM ${entity}`;
+
+    console.log(">>>> ", text);
+
+    try {
+      resp = await pool.query(text);
+    } catch (err) {
+      console.error(err);
+    }
+    console.log("teams ", resp.rows);
 
     return resp.rows;
   }
