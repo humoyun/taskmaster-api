@@ -20,4 +20,8 @@ router.use("/api/projects", projectsRouter);
 router.use("/api/teams", teamsRouter);
 router.use("/api/tasks", tasksRouter);
 
+// router.all("*", (req, res) => {
+//   res.status(404).send({ msg: "not found" });
+// });
+
 module.exports = router;

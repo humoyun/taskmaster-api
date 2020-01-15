@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 const app = express();
 
 const router = require("./src/app");
@@ -19,6 +20,7 @@ app.use(express.static(`${__dirname}/public`));
 // app.use(express.json({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded());
+// app.use(helmet());
 
 app.use(router);
 
