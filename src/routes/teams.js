@@ -1,10 +1,11 @@
 const router = require("express").Router();
+const verify = require("../utils/token_verify.js");
 const db = require("../db");
 
 /*
  * api/teams/
  */
-router.get("/", async (req, res) => {
+router.get("/", verify, async (req, res) => {
   console.log("[api/teams/(all)]");
   const feilds = undefined;
   try {
@@ -38,6 +39,34 @@ router.put("/:id", (req, res) => {
  */
 router.delete("/:id", (req, res) => {
   res.status(201).json({ msg: `team deleted by ${id}` });
+});
+
+/*
+ *
+ */
+router.get("/:id/projects", (req, res) => {
+  res.status(201).json({ msg: `get team/:id/projects by ${id}` });
+});
+
+/*
+ *
+ */
+router.get("/:id/members", (req, res) => {
+  res.status(201).json({ msg: `get team/:id/members by ${id}` });
+});
+
+/*
+ *
+ */
+router.get("/:id/tasks", (req, res) => {
+  res.status(201).json({ msg: `get team/:id/tasks by ${id}` });
+});
+
+/*
+ *
+ */
+router.get("/:id/project/:pid/tasks", (req, res) => {
+  res.status(201).json({ msg: `get team/:id/project/:pid/tasks by ${id}` });
 });
 
 module.exports = router;
