@@ -1,4 +1,4 @@
-const pool = require("../client.js");
+const pool = require("../client.js.js");
 
 console.log("queires");
 

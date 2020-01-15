@@ -1,5 +1,10 @@
+/*
+ *--------------------------------------------------*
+ */
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TYPE status_type AS ENUM ('opened', 'ongoing', 'finished');
 CREATE TYPE state_type AS ENUM (
   'new',
@@ -8,27 +13,37 @@ CREATE TYPE state_type AS ENUM (
   'resolved',
   'closed'
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE role(
   role_id serial PRIMARY KEY,
   role_name VARCHAR (255) UNIQUE NOT NULL
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE job_title(
   id serial PRIMARY KEY,
   title VARCHAR(255) UNIQUE NOT NULL
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE company(
   id serial PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL
 );
-/*--------------------------------------------------*/
-CREATE TABLE tag(
+/*
+ *--------------------------------------------------*
+ */
+CREATE TABLE tags(
   id serial PRIMARY KEY,
   name VARCHAR(50) UNIQUE NOT NULL
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE members(
   id serial START 1000 PRIMARY KEY,
   team_id uuid REFERENCES teams(id),
@@ -47,7 +62,9 @@ CREATE TABLE members(
   last_login TIMESTAMP,
   UNIQUE (username, email)
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE teams(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   admin_id serial REFERENCES members(id),
@@ -57,14 +74,18 @@ CREATE TABLE teams(
   created_at DATE,
   updated_at DATE
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE member_project_pivot(
   id serial PRIMARY KEY,
   member_id serial REFERENCES members(id),
   project_id uuid REFERENCES projects(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE team_member_pivot(
   id serial PRIMARY KEY,
   member_id serial REFERENCES members(id),
@@ -72,7 +93,9 @@ CREATE TABLE team_member_pivot(
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE projects(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   owner_id serial REFERENCES members(id),
@@ -87,7 +110,9 @@ CREATE TABLE projects(
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE tasks(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   assignee_id serial REFERENCES members(id),
@@ -106,8 +131,10 @@ CREATE TABLE tasks(
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-/*--------------------------------------------------*/
-/* it might contain @mentions [] field which is reference to other memners */
+/*
+ * it might contain @mentions [] field which is reference to other memners /
+ *--------------------------------------------------*
+ */
 CREATE TABLE comments(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   owner_id serial REFERENCES members(id),
@@ -115,7 +142,9 @@ CREATE TABLE comments(
   created_at DATE,
   updated_at DATE
 );
-/*-------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE attachs(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   task_id uuid REFERENCES tasks(id),
@@ -124,7 +153,9 @@ CREATE TABLE attachs(
   type VARCHAR(20) CHECK (type IN ('image', 'video', 'doc', 'link')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-/*---------------------------- */
+/*
+ *--------------------------------------------------*
+ */
 CREATE TABLE task_history (
   id uuid DEFAULT uuid_generate_v4(),
   member_id uuid,
@@ -133,7 +164,9 @@ CREATE TABLE task_history (
   /*  */
   created_at timestamp default current_timestamp
 );
-/*--------------------------------------------------*/
+/*
+ *--------------------------------------------------*
+ */
 /*
  EXAMPLE :
 

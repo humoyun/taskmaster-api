@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 
 // const User = require("../models/User.js");
-const { registerV, loginV } = require("../lib/validation");
+const { registerV, loginV } = require("../utils/validation");
 const db = require("../db");
 
 /**
@@ -16,7 +16,7 @@ router.get("/all", async (req, res) => {
   // const { rows } = await db.query("SELECT * FROM users WHERE id = $1", [id]);
   try {
     // const { error, rows } = await db.query("SELECT * FROM member");
-    db.query("SELECT * FROM member", (err, resp) => {
+    db.query("SELECT * FROM members", (err, resp) => {
       console.log(typeof resp.rows);
       res.send(resp.rows);
     });
@@ -30,6 +30,8 @@ router.get("/all", async (req, res) => {
  * Register a user
  */
 router.post("/register", async (req, res) => {
+  console.log("* [api/users/register] *");
+
   const { error } = await registerV(req.body);
 
   if (error) return res.send(error.details).status(400);
@@ -45,17 +47,14 @@ router.post("/register", async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
   // todo this should be handled automatically
-  const created_at = new Date().toLocaleDateString().replace(/\//gi, "-");
-  const updated_at = new Date().toLocaleDateString().replace(/\//gi, "-");
-  const last_login = new Date().toLocaleDateString().replace(/\//gi, "-");
+  // const created_at = new Date().toLocaleDateString().replace(/\//gi, "-");
+  // const updated_at = new Date().toLocaleDateString().replace(/\//gi, "-");
+  // const last_login = new Date().toLocaleDateString().replace(/\//gi, "-");
 
   const newUser = {
     username: req.body.username,
     email: req.body.email,
-    password: hashedPassword,
-    created_at,
-    updated_at,
-    last_login
+    password: hashedPassword
   };
 
   try {
@@ -71,6 +70,8 @@ router.post("/register", async (req, res) => {
  * Login a user
  */
 router.post("/login", async (req, res) => {
+  console.log("* [api/users/login] *");
+
   const { error } = await loginV(req.body);
   if (error) res.send(error.details).status(400);
 

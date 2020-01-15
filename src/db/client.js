@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const connection = require("./connection.json");
+const connection = require("./connection.json.js");
 const postgres = new Client(connection);
 //const { Pool } = require("pg");
 //const pool = new Pool(connection);
