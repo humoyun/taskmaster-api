@@ -1,5 +1,8 @@
 const express = require("express");
-const helmet = require("helmet");
+// const helmet = require("helmet");
+// const multer = require("multer");
+// const logger = require("morgan");
+const debug = require("debug")("myapp:server");
 const app = express();
 
 const router = require("./src/app");
@@ -25,5 +28,5 @@ app.use(express.urlencoded());
 app.use(router);
 
 app.listen(PORT, () => {
-  console.log("server started on port 3003");
+  debug(`HTTP Server started on port: ${PORT}`);
 });

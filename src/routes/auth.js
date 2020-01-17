@@ -65,10 +65,12 @@ router.post("/login", async (req, res) => {
     const validPsw = await bcrypt.compare(req.body.password, user.password);
     if (!validPsw) return res.send("Email or password is wrong !!").status(400);
 
+    const teamId = "";
     // create token
     const token = jwt.sign(
       {
-        id: user.id
+        id: user.id,
+        teamId
         //exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 1 day exp
       },
       process.env.TOKEN_SECRET,
