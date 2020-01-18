@@ -111,6 +111,7 @@ CREATE TABLE projects(
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 /*
+ * watchers VARCHAR [] should be added
  *--------------------------------------------------*
  */
 CREATE TABLE tasks(
