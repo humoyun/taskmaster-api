@@ -9,6 +9,7 @@ module.exports = {
    */
   query: (text, params, callback) => {
     const start = Date.now();
+
     return pool.query(text, params, (err, res) => {
       const duration = Date.now() - start;
       console.log("executed query", { text, duration, rows: res.rowCount });
@@ -45,6 +46,27 @@ module.exports = {
       callback(err, client, release);
     });
   },
+
+  /**
+   *
+   */
+  create: async (entity, data) => {
+    let resp;
+    const { text, values } = insert(entity, data);
+    console.log("[create] >> ", text);
+    console.log("[create] >> ", values);
+
+    try {
+      const rs = await pool.query(text, values);
+      console.log("create user: ", rs.rows[0]);
+      resp = rs.rows[0];
+    } catch (err) {
+      console.error(err);
+    }
+
+    return resp;
+  },
+
   /**
    *
    */
@@ -69,7 +91,7 @@ module.exports = {
     let resp;
     // const text1 = `INSERT INTO member (username, email, password, created_at, updated_at, last_login) values($1, $2, $3, $4, $5, $6) RETURNING *`;
 
-    const { text, values } = insert(user, "members");
+    const { text, values } = insert("members", user);
     console.log(">>>> ", text);
     console.log(">>>> ", values);
 
@@ -99,6 +121,27 @@ module.exports = {
     } catch (err) {
       console.error(err);
     }
+
+    return resp.rows;
+  },
+
+  findOneById: async (entity, id, fields) => {
+    let resp;
+    let fieldsPlaceholder = "*";
+
+    if (fields) {
+      fieldsPlaceholder = fields.join(", ");
+    }
+
+    const text = `SELECT ${fieldsPlaceholder} FROM ${entity} WHERE id = $1`;
+    console.log(">>>> ", text);
+
+    try {
+      resp = await pool.query(text, [id]);
+    } catch (err) {
+      console.error(err);
+    }
+    console.log("teams ", resp.rows);
 
     return resp.rows;
   },

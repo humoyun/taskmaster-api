@@ -14,11 +14,11 @@ const teamsRouter = require("./routes/teams.js");
  * Route Middlewares
  */
 router.use(mainRouter);
-router.use("/api/users", usersRouter);
-router.use("/api/posts", postsRouter);
-router.use("/api/projects", projectsRouter);
-router.use("/api/teams", teamsRouter);
-router.use("/api/tasks", tasksRouter);
+router.use("/v1/users", usersRouter);
+router.use("/v1/posts", postsRouter);
+router.use("/v1/projects", projectsRouter);
+router.use("/v1/teams", teamsRouter);
+router.use("/v1/tasks", tasksRouter);
 
 // router.all("*", (req, res) => {
 //   res.status(404).send({ msg: "not found" });

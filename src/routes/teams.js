@@ -1,31 +1,25 @@
 const router = require("express").Router();
-const verify = require("../utils/token_verify.js");
-const db = require("../db");
+
+const {
+  getAllTeams,
+  getTeamById,
+  createTeam
+} = require("../handlers/teamHandler");
 
 /*
  * api/teams/
  */
-router.get("/", verify, async (req, res) => {
-  console.log("[api/teams/(all)]");
-  const feilds = undefined;
-  try {
-    const teams = await db.findAll("teams", feilds);
-    if (teams) {
-      console.log("teams retrieved successfully");
-      return res.status(201).send(teams);
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send({ msg: "db error" });
-  }
-});
+router.get("/all", getAllTeams);
 
 /*
  *
  */
-router.get("/:id", (req, res) => {
-  res.status(201).json({ msg: `get team by ${id}` });
-});
+router.get("/:id", getTeamById);
+
+/*
+ *
+ */
+router.post("/", createTeam);
 
 /*
  *

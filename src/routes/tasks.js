@@ -13,4 +13,8 @@ router.post("/", (req, res) => {
   res.status(201).send({ msg: "task created" });
 });
 
+router.post("/", (req, res) => {
+  res.status(201).send({ msg: "task created" });
+});
+
 module.exports = router;

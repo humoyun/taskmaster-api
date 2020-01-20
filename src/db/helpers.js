@@ -26,11 +26,11 @@ exports.select = (fields, tableName) => {
 /**
  * INSERT
  */
-exports.insert = (data, tableName) => {
-  const len = Object.keys(data).length;
+exports.insert = (tableName, fields) => {
+  const len = Object.keys(fields).length;
   let valuePlaceholders = "(";
 
-  const keys = Object.keys(data).join(", ");
+  const keys = Object.keys(fields).join(", ");
 
   for (let i = 1; i < len; i += 1) {
     valuePlaceholders += `$${i}, `;
@@ -40,8 +40,8 @@ exports.insert = (data, tableName) => {
   const text = `INSERT INTO ${tableName} (${keys}) values${valuePlaceholders} RETURNING *`;
 
   const values = [];
-  Object.keys(data).forEach(key => {
-    values.push(data[key]);
+  Object.keys(fields).forEach(key => {
+    values.push(fields[key]);
   });
   // todo order of keys and values of data should match !??
 
