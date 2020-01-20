@@ -95,11 +95,6 @@ exports.register = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-  // todo this should be handled automatically
-  // const created_at = new Date().toLocaleDateString().replace(/\//gi, "-");
-  // const updated_at = new Date().toLocaleDateString().replace(/\//gi, "-");
-  // const last_login = new Date().toLocaleDateString().replace(/\//gi, "-");
-
   const newUser = {
     username: req.body.username,
     email: req.body.email,
@@ -120,4 +115,3 @@ exports.logout = async (req, res) => {};
 exports.verify = async (req, res) => {};
 
 exports.passwordReset = async (req, res) => {};
-// exports.logout = async (req, res) => {};

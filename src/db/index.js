@@ -52,16 +52,16 @@ module.exports = {
    */
   create: async (entity, data) => {
     let resp;
-    const { text, values } = insert(entity, data);
-    console.log("[create] >> ", text);
-    console.log("[create] >> ", values);
-
     try {
+      const { text, values } = insert(entity, data);
+      console.log("[create] >> ", text);
+      console.log("[create] >> ", values);
       const rs = await pool.query(text, values);
       console.log("create user: ", rs.rows[0]);
       resp = rs.rows[0];
     } catch (err) {
       console.error(err);
+      throw err;
     }
 
     return resp;

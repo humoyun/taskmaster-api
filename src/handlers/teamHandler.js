@@ -40,7 +40,9 @@ exports.getTeamById = async (req, res) => {
 };
 
 /**
+ * check for error cases postgres
  *
+ * code: 23505 => unique_violation
  */
 exports.createTeam = async (req, res) => {
   try {
@@ -48,17 +50,20 @@ exports.createTeam = async (req, res) => {
     const fields = {
       id: uuid.v4(),
       name: req.body.name,
-      admin_id: req.body.adminId,
+      owner_id: req.body.ownerId,
       description: req.body.description,
       info: req.body.info
     };
 
     console.log("team: ", fields);
 
-    const teams = await db.create("teams", fields);
-    if (teams) {
+    const result = await db.create("teams", fields);
+    console.log("/----------------------------------/");
+    console.log(result);
+    console.log("/----------------------------------/");
+    if (result) {
       console.log("teams retrieved successfully");
-      return res.status(201).send(teams);
+      return res.status(201).send(result);
     }
   } catch (err) {
     console.error(err);

@@ -55,8 +55,8 @@ CREATE TABLE tags(
  */
 CREATE TABLE members(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR (50),
-  email VARCHAR (100),
+  username VARCHAR (50) UNIQUE,
+  email VARCHAR (100) UNIQUE,
   password VARCHAR (255) NOT NULL,
   first_name VARCHAR (100),
   last_name VARCHAR (100),
@@ -68,8 +68,7 @@ CREATE TABLE members(
   info JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (username, email)
+  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE karmas(
@@ -82,21 +81,13 @@ CREATE TABLE karmas(
  */
 CREATE TABLE teams(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name VARCHAR (255) UNIQUE,
+  owner_id uuid REFERENCES members(id) NOT NULL,
+  name VARCHAR (255),
   description TEXT,
   info json,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-/*
- *--------------------------------------------------*
- */
-CREATE TABLE member_project_pivot(
-  id serial PRIMARY KEY,
-  member_id serial REFERENCES members(id),
-  project_id uuid REFERENCES projects(id),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(owner_id, name)
 );
 
 /*
@@ -108,6 +99,16 @@ CREATE TABLE team_member_pivot(
   team_id uuid REFERENCES teams(id),
   role role_type,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/*
+ *--------------------------------------------------*
+ */
+CREATE TABLE member_project_pivot(
+  id serial PRIMARY KEY,
+  member_id serial REFERENCES members(id),
+  project_id uuid REFERENCES projects(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
