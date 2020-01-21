@@ -1,7 +1,7 @@
 /**
  * SELECT
  */
-exports.select = (fields, tableName) => {
+exports.select = (tableName, data) => {
   const len = Object.keys(data).length;
   let valuePlaceholders = "(";
 
@@ -12,13 +12,40 @@ exports.select = (fields, tableName) => {
   }
   valuePlaceholders += `$${len})`;
 
-  const text = `INSERT INTO ${tableName} (${keys}) values${valuePlaceholders} RETURNING *`;
+  const text = `SELECT ${valuePlaceholders} FROM ${tableName} (${keys})`;
 
   const values = [];
   Object.keys(data).forEach(key => {
     values.push(data[key]);
   });
   // todo order of keys and values of data should match !??
+
+  return { text, values };
+};
+
+/**
+ * SELECT * FROM WHERE conditions;
+ */
+exports.selectOne = (tableName, conditions, data) => {
+  console.log(tableName, conditions, data);
+  let columns;
+
+  if (!data || (Array.isArray(data) && data[0] === "*")) {
+    columns = "*";
+  } else {
+    columns = data.join(", ");
+  }
+
+  const keys = Object.keys(conditions);
+  const condTuples = keys.map((k, index) => `${k} = $${index + 1}`);
+  const condPlaceholders = condTuples.join(", ");
+
+  const text = `SELECT ${columns} FROM ${tableName} WHERE ${condPlaceholders}`;
+
+  const values = [];
+  Object.keys(conditions).forEach(key => {
+    values.push(conditions[key]);
+  });
 
   return { text, values };
 };
@@ -51,7 +78,7 @@ exports.insert = (tableName, fields) => {
 /**
  *  "UPDATE members SET field_1 = $1, field_2 = $2, field_3 = $3, ... ( WHERE ...) RETURNING *";
  */
-exports.update = (data, tableName, cond) => {
+exports.update = (tableName, cond, data) => {
   const updates = "";
   const len = Object.keys(data).length;
 
@@ -74,7 +101,7 @@ exports.update = (data, tableName, cond) => {
 /**
  *  "DELETE members field_1 = $1, field_2 = $2, field_3 = $3, ... ( WHERE ...) RETURNING *";
  */
-exports.delete = (data, tableName, cond) => {
+exports.delete = (tableName, cond, data) => {
   const updates = "";
   const len = Object.keys(data).length;
 

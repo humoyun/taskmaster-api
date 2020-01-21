@@ -85,9 +85,13 @@ exports.register = async (req, res) => {
 
   if (error) return res.send(error.details).status(400);
 
+  const fields = ["", "", ""];
+  const conditions = {
+    email: req.body.email
+  };
   // check for user uniqueness
-  // const emailExist = await User.findOne({ email: req.body.email });
-  const emailExist = await db.findUser({ email: req.body.email });
+  const emailExist = await db.findOne("members", conditions, fields);
+
   console.log("emailExist : ", emailExist);
   if (emailExist) return res.send("Email is already exist").status(400);
 
@@ -103,7 +107,10 @@ exports.register = async (req, res) => {
 
   try {
     const savedUser = await db.createUser(newUser);
-    if (savedUser) res.status(201).json({ msg: "successfull insert" });
+    if (savedUser)
+      res.status(201).json({
+        msg: "successfull insert"
+      });
   } catch (err) {
     console.error(err);
     res.status(400).send(error);

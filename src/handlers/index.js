@@ -1,6 +1,6 @@
-exports.bcryptCheck = async (password, hash) => {
+exports.bcryptCheck = async (password, hashedPsw) => {
   return await new Promise(resolve =>
-    bcrypt.compare(password, hash, (err, res) => {
+    bcrypt.compare(password, hashedPsw, (err, res) => {
       if (err) {
         return resolve(false);
       }

@@ -1,8 +1,13 @@
 const { Pool } = require("pg");
 const connection = require("./connection.json");
 const pool = new Pool(connection);
-const { insert } = require("./helpers");
+const { insert, selectOne } = require("./helpers");
 
+/**
+ * The main mechanism to avoid SQL Injection is by escaping the input parameters.
+ * Any good SQL library should have a way to achieve this.
+ * PG library allows you to do this by placeholders `($1, $2)`
+ */
 module.exports = {
   /**
    *
@@ -68,22 +73,56 @@ module.exports = {
   },
 
   /**
-   *
+   * entity: table name, e.g, users
+   * conditions: { id: "some-id", team_id: "some-team-id" }
+   * fields: list of desired columns to return ['id', 'name', '...'] or ['*']
    */
-  findUser: async user => {
+  findOne: async (entity, conditions, fields) => {
+    if (!entity) throw new Error("no entity table specified");
+    if (!conditions) throw new Error("no conditions specified");
+
     let resp;
-    const text = "SELECT * FROM members WHERE email = $1";
-    const values = [user.email];
 
     try {
+      const { text, values } = selectOne(entity, conditions, fields);
       const rs = await pool.query(text, values);
-      resp = rs.rows[0];
+      if (rs) resp = rs.rows[0];
+    } catch (err) {
+      console.error(err);
+    }
+    console.log("[findOne] res: ", resp);
+
+    return resp;
+  },
+
+  /**
+   *
+   */
+  updateOne: async (table, fields, conditions, cb) => {
+    let resp;
+
+    try {
     } catch (err) {
       console.error(err);
     }
 
     return resp;
   },
+
+  /**
+   *
+   */
+  deleteOne: async (table, fields, conditions, cb) => {
+    let resp;
+
+    try {
+    } catch (err) {
+      console.error(err);
+    }
+
+    return resp;
+  },
+
   /**
    *
    */

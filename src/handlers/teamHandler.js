@@ -41,7 +41,7 @@ exports.getTeamById = async (req, res) => {
 
 /**
  * check for error cases postgres
- *
+ * https://www.postgresql.org/docs/9.2/errcodes-appendix.html
  * code: 23505 => unique_violation
  */
 exports.createTeam = async (req, res) => {
