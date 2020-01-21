@@ -1,33 +1,20 @@
-/**
- * SELECT
- */
-exports.select = (tableName, data) => {
-  const len = Object.keys(data).length;
-  let valuePlaceholders = "(";
+const Utils = {};
 
-  const keys = Object.keys(data).join(", ");
-
-  for (let i = 1; i < len; i += 1) {
-    valuePlaceholders += `$${i}, `;
-  }
-  valuePlaceholders += `$${len})`;
-
-  const text = `SELECT ${valuePlaceholders} FROM ${tableName} (${keys})`;
-
-  const values = [];
-  Object.keys(data).forEach(key => {
-    values.push(data[key]);
-  });
-  // todo order of keys and values of data should match !??
-
-  return { text, values };
-};
+Utils.isObject = x => x !== null && typeof x === "object";
+Utils.isObjEmpty = obj => Utils.isObject(obj) && Object.keys(obj).length === 0;
+Utils.isObjValuesEmpty = obj =>
+  // eslint-disable-next-line
+  !Utils.isObjEmpty(obj) &&
+  Object.keys(obj)
+    .map(k => obj[k])
+    .some(s => s);
 
 /**
- * SELECT * FROM WHERE conditions;
+ * Convinient abstraction to query one row based on some condition(s)
+ * SELECT {data} FROM {tableName} WHERE {conditions};
  */
-exports.selectOne = (tableName, conditions, data) => {
-  console.log(tableName, conditions, data);
+exports.select = (tableName, conditions = {}, data = ["*"]) => {
+  // logging
   let columns;
 
   if (!data || (Array.isArray(data) && data[0] === "*")) {
@@ -36,11 +23,15 @@ exports.selectOne = (tableName, conditions, data) => {
     columns = data.join(", ");
   }
 
-  const keys = Object.keys(conditions);
-  const condTuples = keys.map((k, index) => `${k} = $${index + 1}`);
-  const condPlaceholders = condTuples.join(", ");
+  let text = `SELECT ${columns} FROM ${tableName}`;
 
-  const text = `SELECT ${columns} FROM ${tableName} WHERE ${condPlaceholders}`;
+  if (!Utils.isObjEmpty(conditions)) {
+    const keys = Object.keys(conditions);
+    const condTuples = keys.map((k, index) => `${k} = $${index + 1}`);
+    const condPlaceholders = condTuples.join(", ");
+
+    text += ` WHERE ${condPlaceholders}`;
+  }
 
   const values = [];
   Object.keys(conditions).forEach(key => {

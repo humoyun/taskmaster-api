@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 const connection = require("./connection.json");
 const pool = new Pool(connection);
-const { insert, selectOne } = require("./helpers");
+const { insert, select } = require("./helpers");
 
 /**
  * The main mechanism to avoid SQL Injection is by escaping the input parameters.
@@ -84,13 +84,12 @@ module.exports = {
     let resp;
 
     try {
-      const { text, values } = selectOne(entity, conditions, fields);
+      const { text, values } = select(entity, conditions, fields);
       const rs = await pool.query(text, values);
       if (rs) resp = rs.rows[0];
     } catch (err) {
       console.error(err);
     }
-    console.log("[findOne] res: ", resp);
 
     return resp;
   },
@@ -164,48 +163,22 @@ module.exports = {
     return resp.rows;
   },
 
-  findOneById: async (entity, id, fields) => {
-    let resp;
-    let fieldsPlaceholder = "*";
-
-    if (fields) {
-      fieldsPlaceholder = fields.join(", ");
-    }
-
-    const text = `SELECT ${fieldsPlaceholder} FROM ${entity} WHERE id = $1`;
-    console.log(">>>> ", text);
-
-    try {
-      resp = await pool.query(text, [id]);
-    } catch (err) {
-      console.error(err);
-    }
-    console.log("teams ", resp.rows);
-
-    return resp.rows;
-  },
-
   /**
    *
    */
-  findAll: async (entity, fields) => {
+  findAll: async (entity, conditions, fields) => {
+    if (!entity) throw new Error("no entity table specified");
+
     let resp;
-    let fieldsPlaceholder = "*";
-
-    if (fields) {
-      fieldsPlaceholder = fields.join(", ");
-    }
-    const text = `SELECT ${fieldsPlaceholder} FROM ${entity}`;
-
-    console.log(">>>> ", text);
 
     try {
-      resp = await pool.query(text);
+      const { text, values } = select(entity, conditions, fields);
+      const rs = await pool.query(text, values);
+      if (rs) resp = rs.rows;
     } catch (err) {
       console.error(err);
     }
-    console.log("teams ", resp.rows);
 
-    return resp.rows;
+    return resp;
   }
 };

@@ -4,14 +4,28 @@ const jwt = require("jsonwebtoken");
 const db = require("../db");
 const { registerV, loginV } = require("../utils/validation");
 
+const fields = [
+  "id",
+  "username",
+  "email",
+  "first_name",
+  "last_name",
+  "avatar",
+  "avatar_thumb",
+  "job_title",
+  "location",
+  "verified",
+  "info",
+  "last_login"
+];
+
 exports.getAllMembers = async (req, res) => {
   console.log("users/all");
 
   try {
-    // const { error, rows } = await db.query("SELECT * FROM member");
-    const fields = undefined;
-    const members = await db.findAll("members", fields);
-    console.log("getAllMembers: ", members);
+    const conditions = {};
+    const members = await db.findAll("members", conditions, fields);
+    console.log("getAllMembers: ", members.length, " members");
     res.send(members);
   } catch (err) {
     res.status(500).json({ msg: "cannot retrieve data from db" });
@@ -25,13 +39,12 @@ exports.getAllMembers = async (req, res) => {
 exports.getMemberById = async (req, res) => {
   console.log("v1/users/:id");
   const memberId = req.params.id;
-  console.log("member id: ", memberId);
 
   try {
-    const fields = undefined;
-    const members = await db.findOneById("members", memberId, fields);
-    console.log("getAllMembers: ", members);
-    res.send(members);
+    const conditions = { id: memberId };
+    const member = await db.findOne("members", conditions, fields);
+    console.log("get member by id: : ", member);
+    res.send(member);
   } catch (err) {
     res.status(500).json({ msg: "cannot retrieve data from db" });
     console.error(err);
@@ -51,7 +64,14 @@ exports.login = async (req, res) => {
 
   // check for user email exists
   try {
-    const user = await db.findUser({ email: req.body.email });
+    const fields = ["*"];
+    const conditions = {
+      email: req.body.email,
+      username: req.body.username
+    };
+
+    const user = await db.findOne("members", conditions, fields);
+
     if (!user) return res.send("Email or password is wrong !").status(400);
 
     // salt [hash password]
@@ -62,7 +82,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       {
         id: user.id
-        //exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 1 day exp
+        // exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // 1 day exp
       },
       process.env.TOKEN_SECRET,
       { expiresIn: "24h" }
@@ -83,9 +103,9 @@ exports.register = async (req, res) => {
 
   const { error } = await registerV(req.body);
 
-  if (error) return res.send(error.details).status(400);
+  if (error) return res.send(error.details[0].message).status(400);
 
-  const fields = ["", "", ""];
+  const fields = ["*"];
   const conditions = {
     email: req.body.email
   };
@@ -109,7 +129,7 @@ exports.register = async (req, res) => {
     const savedUser = await db.createUser(newUser);
     if (savedUser)
       res.status(201).json({
-        msg: "successfull insert"
+        msg: `user ${savedUser.username} created successfully`
       });
   } catch (err) {
     console.error(err);

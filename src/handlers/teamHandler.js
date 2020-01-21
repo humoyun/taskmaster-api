@@ -1,13 +1,17 @@
 const db = require("../db");
 const uuid = require("node-uuid");
+
+const fields = ["*"];
 /**
  *
  */
 exports.getAllTeams = async (req, res) => {
   console.log("[api/teams/(all)]");
-  const fields = undefined;
+
+  const conditions = {};
+
   try {
-    const teams = await db.findAll("teams", fields);
+    const teams = await db.findAll("teams", conditions, fields);
     if (teams) {
       console.log("teams retrieved successfully");
       return res.status(201).send(teams);
@@ -23,12 +27,12 @@ exports.getAllTeams = async (req, res) => {
  */
 exports.getTeamById = async (req, res) => {
   console.log("[api/teams/:id]");
-  const fields = undefined;
   const teamId = req.params.id;
   console.log("member id: ", teamId);
 
   try {
-    const teams = await db.findOneById("teams", teamId, fields);
+    const conditions = { id: teamId };
+    const teams = await db.findOne("teams", conditions, fields);
     if (teams) {
       console.log("teams retrieved successfully");
       return res.status(201).send(teams);
