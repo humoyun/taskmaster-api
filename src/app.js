@@ -1,5 +1,5 @@
 const express = require("express");
-
+const auth = require("./middlewares/auth");
 const router = express.Router();
 
 const mainRouter = require("./routes/main.js");
@@ -15,10 +15,10 @@ const teamsRouter = require("./routes/teams.js");
  */
 router.use(mainRouter);
 router.use("/v1/users", usersRouter);
-router.use("/v1/posts", postsRouter);
-router.use("/v1/projects", projectsRouter);
-router.use("/v1/teams", teamsRouter);
-router.use("/v1/tasks", tasksRouter);
+router.use("/v1/posts", auth, postsRouter);
+router.use("/v1/projects", auth, projectsRouter);
+router.use("/v1/teams", auth, teamsRouter);
+router.use("/v1/tasks", auth, tasksRouter);
 
 // router.all("*", (req, res) => {
 //   res.status(404).send({ msg: "not found" });

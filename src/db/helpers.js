@@ -28,7 +28,7 @@ exports.select = (tableName, conditions = {}, data = ["*"]) => {
   if (!Utils.isObjEmpty(conditions)) {
     const keys = Object.keys(conditions);
     const condTuples = keys.map((k, index) => `${k} = $${index + 1}`);
-    const condPlaceholders = condTuples.join(", ");
+    const condPlaceholders = condTuples.join(" AND ");
 
     text += ` WHERE ${condPlaceholders}`;
   }
@@ -92,22 +92,18 @@ exports.update = (tableName, cond, data) => {
 /**
  *  "DELETE members field_1 = $1, field_2 = $2, field_3 = $3, ... ( WHERE ...) RETURNING *";
  */
-exports.delete = (tableName, cond, data) => {
-  const updates = "";
-  const len = Object.keys(data).length;
-
-  Object.keys(data).forEach((key, index) => {
-    updates += ` ${key} = ${index + 1} `;
-  });
+exports.remove = (tableName, conditions, data = []) => {
+  const condKeys = Object.keys(conditions);
+  const condTuples = condKeys.map((k, index) => `${k} = $${index + 1}`);
+  const condPlaceholders = condTuples.join(" AND ");
 
   const values = [];
-  Object.keys(data).forEach(key => {
-    values.push(data[key]);
+  Object.keys(conditions).forEach(key => {
+    values.push(conditions[key]);
   });
 
-  let text = `DELETE FROM ${tableName} WHERE ${updates}`;
-  if (cond) text += `WHERE ${cond}`;
-  text += " RETURNING *";
+  let text = `DELETE FROM ${tableName} WHERE ${condPlaceholders}`;
+  if (data && data.length > 0) text += " RETURNING *";
 
   return { text, values };
 };

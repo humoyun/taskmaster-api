@@ -1,7 +1,10 @@
 const router = require("express").Router();
-const verify = require("../utils/token_verify.js");
+const jwt = require("jsonwebtoken");
 
-router.get("/", verify, (req, res) => {
+router.get("/", (req, res) => {
+  console.log("************************");
+  console.log("verifiedUser: ", req.user);
+
   res.json([
     {
       id: "post_1",

@@ -3,7 +3,9 @@ const router = require("express").Router();
 const {
   getAllTeams,
   getTeamById,
-  createTeam
+  createTeam,
+  updateTeam,
+  deleteTeam
 } = require("../handlers/teamHandler");
 
 /*

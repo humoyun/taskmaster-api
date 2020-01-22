@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 const connection = require("./connection.json");
 const pool = new Pool(connection);
-const { insert, select } = require("./helpers");
+const { insert, select, remove, update } = require("./helpers");
 
 /**
  * The main mechanism to avoid SQL Injection is by escaping the input parameters.
@@ -97,10 +97,17 @@ module.exports = {
   /**
    *
    */
-  updateOne: async (table, fields, conditions, cb) => {
+  deleteOne: async (entity, conditions, data) => {
+    if (!entity) throw new Error("no entity table specified");
+    if (!conditions) throw new Error("no conditions specified");
+
     let resp;
 
     try {
+      const { text, values } = remove(entity, conditions, data);
+      const rs = await pool.query(text, values);
+
+      if (rs) resp = rs.rows[0];
     } catch (err) {
       console.error(err);
     }
@@ -111,7 +118,7 @@ module.exports = {
   /**
    *
    */
-  deleteOne: async (table, fields, conditions, cb) => {
+  updateOne: async (table, fields, conditions, cb) => {
     let resp;
 
     try {
@@ -169,14 +176,19 @@ module.exports = {
   findAll: async (entity, conditions, fields) => {
     if (!entity) throw new Error("no entity table specified");
 
-    let resp;
+    let resp = [];
 
     try {
       const { text, values } = select(entity, conditions, fields);
+
+      console.log(">>>> ", text);
+      console.log(">>>> ", values);
+
       const rs = await pool.query(text, values);
+      console.log("rs: ", rs);
       if (rs) resp = rs.rows;
     } catch (err) {
-      console.error(err);
+      throw new Error({ err: true, code: err.code });
     }
 
     return resp;

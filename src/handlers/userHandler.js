@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+// const token = require("../models/Token");
 
 const db = require("../db");
 const { registerV, loginV } = require("../utils/validation");
@@ -20,7 +21,7 @@ const fields = [
 ];
 
 exports.getAllMembers = async (req, res) => {
-  console.log("users/all");
+  console.log("[get] v1/users/all");
 
   try {
     const conditions = {};
@@ -37,7 +38,7 @@ exports.getAllMembers = async (req, res) => {
  *
  */
 exports.getMemberById = async (req, res) => {
-  console.log("v1/users/:id");
+  console.log("[get] v1/users/:id");
   const memberId = req.params.id;
 
   try {
@@ -51,37 +52,55 @@ exports.getMemberById = async (req, res) => {
   }
 };
 
-exports.search = async (req, res) => {};
+exports.deleteMemberById = async (req, res) => {
+  console.log("[delete] v1/users/:id");
+  const memberId = req.params.id;
+
+  try {
+    const conditions = { id: memberId };
+    const dataBack = ["id", "username", "email"];
+
+    const member = await db.deleteOne("members", conditions, dataBack);
+
+    if (!member)
+      return res.status(404).json({ msg: "User not found by this id" });
+    else res.send(member);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 /**
  *
  */
 exports.login = async (req, res) => {
-  console.log("* [api/users/login] *");
+  console.log("[post] [api/users/login] *");
 
   const { error } = await loginV(req.body);
-  if (error) res.send(error.details).status(400);
+  if (error) res.status(400).json({ msg: error.details });
 
   // check for user email exists
   try {
     const fields = ["*"];
-    const conditions = {
-      email: req.body.email,
-      username: req.body.username
-    };
+    const conditions = {};
+
+    if (req.body.email) conditions.email = req.body.email;
+    if (req.body.username) conditions.username = req.body.username;
 
     const user = await db.findOne("members", conditions, fields);
 
-    if (!user) return res.send("Email or password is wrong !").status(400);
+    if (!user)
+      return res.status(400).send({ msg: "Email or password is wrong !!" });
 
     // salt [hash password]
     const validPsw = await bcrypt.compare(req.body.password, user.password);
-    if (!validPsw) return res.send("Email or password is wrong !!").status(400);
+    if (!validPsw) return res.status(400).send("Email or password is wrong !!");
 
     // create token
     const token = jwt.sign(
       {
-        id: user.id
+        id: user.id, // needed for authentication
+        role: "" // needed for authorization
         // exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // 1 day exp
       },
       process.env.TOKEN_SECRET,
