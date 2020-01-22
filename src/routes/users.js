@@ -8,24 +8,24 @@ const {
   logout,
   passwordReset,
   verify,
-  getAllMembers,
-  getMemberById,
-  deleteMemberById
+  getMembers,
+  getMember,
+  deleteMember
 } = require("../handlers/userHandler");
 
 /**
  * Get all users
  */
-router.get("/all", getAllMembers);
+router.get("/all", getMembers);
 
 /**
  * Get user by id
  */
-router.get("/:id", getMemberById);
+router.get("/:id", getMember);
 /**
  * Get user by id
  */
-router.delete("/:id", deleteMemberById);
+router.delete("/:id", deleteMember);
 
 /**
  * Register a user

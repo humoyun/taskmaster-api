@@ -105,8 +105,10 @@ module.exports = {
 
     try {
       const { text, values } = remove(entity, conditions, data);
+      console.log("[deleteOne] >> ", text);
+      console.log("[deleteOne] >> ", values);
       const rs = await pool.query(text, values);
-
+      console.log(rs);
       if (rs) resp = rs.rows[0];
     } catch (err) {
       console.error(err);

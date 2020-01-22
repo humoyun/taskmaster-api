@@ -20,7 +20,7 @@ const fields = [
   "last_login"
 ];
 
-exports.getAllMembers = async (req, res) => {
+exports.getMembers = async (req, res) => {
   console.log("[get] v1/users/all");
 
   try {
@@ -37,7 +37,7 @@ exports.getAllMembers = async (req, res) => {
 /**
  *
  */
-exports.getMemberById = async (req, res) => {
+exports.getMember = async (req, res) => {
   console.log("[get] v1/users/:id");
   const memberId = req.params.id;
 
@@ -52,7 +52,7 @@ exports.getMemberById = async (req, res) => {
   }
 };
 
-exports.deleteMemberById = async (req, res) => {
+exports.deleteMember = async (req, res) => {
   console.log("[delete] v1/users/:id");
   const memberId = req.params.id;
 

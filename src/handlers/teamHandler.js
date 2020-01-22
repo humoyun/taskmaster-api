@@ -5,7 +5,7 @@ const fields = ["*"];
 /**
  *
  */
-exports.getAllTeams = async (req, res) => {
+exports.getTeams = async (req, res) => {
   console.log("[api/teams/(all)]");
 
   const conditions = { owner_id: req.user.id };
@@ -25,7 +25,7 @@ exports.getAllTeams = async (req, res) => {
 /**
  *
  */
-exports.getTeamById = async (req, res) => {
+exports.getTeam = async (req, res) => {
   console.log("[api/teams/:id]");
   const teamId = req.params.id;
   console.log("member id: ", teamId);
@@ -81,10 +81,28 @@ exports.createTeam = async (req, res) => {
  *
  */
 exports.deleteTeam = async (req, res) => {
-  console.log("[api/teams/:id]");
+  console.log("[delete] api/teams/:id");
   try {
-    const teamId = req.params.id;
+    const id = req.params.id;
+    const owner_id = req.user.id;
+    const conditions = { id, owner_id };
+    console.log("member id: ", conditions);
+
+    const result = await db.deleteOne("teams", conditions, ["*"]);
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: "server error" });
+  }
+};
+
+exports.deleteTeams = async (req, res) => {
+  console.log("[api/teams]");
+  try {
+    const teamIdsArray = req.body.ids;
+    const conditions = { id: req.user.id };
     console.log("member id: ", teamId);
+    const result = await db.deleteOne("teams", fields);
   } catch (err) {}
 };
 /**

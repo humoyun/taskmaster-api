@@ -1,8 +1,8 @@
 const router = require("express").Router();
 
 const {
-  getAllTeams,
-  getTeamById,
+  getTeams,
+  getTeam,
   createTeam,
   updateTeam,
   deleteTeam
@@ -11,12 +11,12 @@ const {
 /*
  * api/teams/
  */
-router.get("/all", getAllTeams);
+router.get("/", getTeams);
 
 /*
  *
  */
-router.get("/:id", getTeamById);
+router.get("/:id", getTeam);
 
 /*
  *
@@ -26,16 +26,12 @@ router.post("/", createTeam);
 /*
  *
  */
-router.put("/:id", (req, res) => {
-  res.status(201).json({ msg: `team updated by ${id}` });
-});
+router.put("/:id", updateTeam);
 
 /*
  *
  */
-router.delete("/:id", (req, res) => {
-  res.status(201).json({ msg: `team deleted by ${id}` });
-});
+router.delete("/:id", deleteTeam);
 
 /*
  *
