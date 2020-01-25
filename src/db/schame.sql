@@ -6,6 +6,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 /*
  *--------------------------------------------------*
  */
+CREATE TYPE priority_type AS ENUM ('high', 'medium', 'low');
+
 CREATE TYPE status_type AS ENUM ('created', 'started', 'ongoing', 'finished');
 
 CREATE TYPE role_type AS ENUM ('master', 'owner', 'admin', 'member', 'guest');
@@ -146,21 +148,23 @@ CREATE TABLE projects(
  */
 CREATE TABLE tasks(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
-  assignee_id serial REFERENCES members(id),
-  reporter_id serial REFERENCES members(id),
+  project_id uuid REFERENCES projects(id) NOT NULL,
+  assignee_id uuid REFERENCES members(id),
+  reporter_id uuid REFERENCES members(id),
   subject VARCHAR(255) NOT NULL,
   description TEXT,
-  state state_type,
-  priority VARCHAR (10) CHECK (priority IN ('high', 'medium', 'low')),
+  state state_type DEFAULT 'new',
+  priority priority_type DEFAULT NULL,
   type VARCHAR (10) CHECK (type IN ('bug', 'task', 'story')),
   flagged BOOLEAN DEFAULT false,
   tags VARCHAR [],
-  check_list json,
+  info json,
+  todo_list json,
   cover_image VARCHAR(255),
   due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(project_id, subject)
 );
 
 /*

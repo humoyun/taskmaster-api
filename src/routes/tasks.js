@@ -1,42 +1,36 @@
 const router = require("express").Router();
 
-/**
- * teamId and projectid should be sent on the body
- */
-router.get("/", (req, res) => {
-  // req.body.teamId
-  // req.body.projectId
-  res.json({ msg: "task created" });
-});
+const {
+  getTask,
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask
+} = require("../handlers/taskHandler");
 
 /**
  * teamId and projectid should be sent on the body
  */
-router.get("/:id", (req, res) => {
-  res.json({ msg: "task created" });
-});
+router.get("/", getTasks);
+
+/**
+ * teamId and projectid should be sent on the body
+ */
+router.get("/:id", getTask);
 
 /**
  *
  */
-router.post("/", (req, res) => {
-  // req.body.teamId
-  // req.body.projectId
-  res.status(201).json({ msg: "task created" });
-});
+router.post("/", createTask);
 
 /**
  *
  */
-router.put("/:id", (req, res) => {
-  res.json({ msg: "task created" });
-});
+router.put("/:id", updateTask);
 
 /**
  *
  */
-router.delete("/:id", (req, res) => {
-  res.json({ msg: "task created" });
-});
+router.delete("/:id", deleteTask);
 
 module.exports = router;

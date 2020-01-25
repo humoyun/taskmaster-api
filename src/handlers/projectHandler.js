@@ -41,7 +41,7 @@ exports.getProject = async (req, res) => {
     const project = await db.findOne("projects", conditions, fields);
     if (project) {
       console.log("teams retrieved successfully");
-      return res.status(201).json(project);
+      return res.json(project);
     }
     res.status(404).json({ msg: "not found" });
   } catch (err) {
