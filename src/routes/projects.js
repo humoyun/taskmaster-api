@@ -11,16 +11,12 @@ const {
 /**
  *
  */
-router.get("/", (req, res) => {
-  res.status(201).json({ msg: "project created" });
-});
+router.get("/", getProjects);
 
 /**
  *
  */
-router.get("/:id", (req, res) => {
-  res.json({ id: "test-id", name: "test-name" });
-});
+router.get("/:id", getProject);
 
 /**
  *
@@ -31,6 +27,10 @@ router.post("/", createProject);
  *
  */
 router.put("/:id", updateProject);
+/**
+ *
+ */
+router.delete("/:id", deleteProject);
 
 module.exports = router;
 

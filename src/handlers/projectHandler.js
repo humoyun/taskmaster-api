@@ -7,7 +7,7 @@ const fields = ["*"];
  *
  */
 exports.getProjects = async (req, res) => {
-  console.log("[v1/projects/(all)]");
+  console.log("[GET] {api/v1/projects}");
 
   const conditions = { owner_id: req.user.id };
 
@@ -27,18 +27,23 @@ exports.getProjects = async (req, res) => {
  *
  */
 exports.getProject = async (req, res) => {
-  console.log("[api/teams/:id]");
-  const teamId = req.params.id;
+  console.log("[GET] {api/v1/projects/:id}");
+  const teamId = req.query.teamId;
   console.log("member id: ", teamId);
 
   try {
-    const conditions = { id: teamId };
+    const conditions = {
+      id: req.params.id,
+      owner_id: req.user.id
+      // team_id: teamId
+    };
+
     const project = await db.findOne("projects", conditions, fields);
     if (project) {
       console.log("teams retrieved successfully");
       return res.status(201).json(project);
     }
-    res.status(404).json(project);
+    res.status(404).json({ msg: "not found" });
   } catch (err) {
     console.error(err);
     return res.status(500).send({ msg: "db error" });
@@ -63,7 +68,7 @@ exports.getProject = async (req, res) => {
 
 exports.createProject = async (req, res) => {
   try {
-    console.log("[POST]:[api/projects]");
+    console.log("[POST] {api/v1/projects}");
 
     const fields = {
       id: uuid.v4(),
@@ -107,7 +112,7 @@ exports.createProject = async (req, res) => {
  */
 exports.updateProject = async (req, res) => {
   try {
-    console.log("[PUT]:[api/projects]");
+    console.log("[PUT] {api/v1/projects}");
     const tmp = {
       team_id: req.body.teamId,
       title: req.body.title,
@@ -125,16 +130,12 @@ exports.updateProject = async (req, res) => {
       owner_id: req.user.id
     };
 
-    console.log("team: ", conditions, fields);
-
     const project = await db.updateOne("projects", conditions, fields);
-    console.log("/----------------------------------/");
-    console.log(project);
-    console.log("/----------------------------------/");
     if (project) {
-      console.log("project retrieved successfully");
-      res.status(201).json(project);
+      console.log("project updated successfully");
+      return res.json(project);
     }
+    res.status(404).json({ msg: "not found" });
   } catch (err) {
     console.error(err);
     if (err.code === "23505")
@@ -150,15 +151,12 @@ exports.updateProject = async (req, res) => {
  *
  */
 exports.deleteProject = async (req, res) => {
-  console.log("[delete] api/projects/:id");
+  console.log("[DELETE] {api/v1/projects/:id}");
   try {
     const id = req.params.id;
     const owner_id = req.user.id;
-    const team_id = req.body.teamId;
     const conditions = { id, owner_id };
-    if (team_id) conditions.team_id = team_id;
-
-    console.log("conditions: ", conditions);
+    // if (req.body.teamId) conditions.team_id = req.body.teamId;
 
     const project = await db.deleteOne("projects", conditions, ["*"]);
     if (project) {
@@ -166,7 +164,7 @@ exports.deleteProject = async (req, res) => {
     }
     res.status(404).json({ msg: "not found" });
   } catch (err) {
-    res.status(500).json({ msg: "server error" });
+    res.status(500).json({ msg: "Server Error" });
   }
 };
 
@@ -174,7 +172,7 @@ exports.deleteProject = async (req, res) => {
  *
  */
 exports.bulkDeleteProjects = async (req, res) => {
-  console.log("[api/projects]");
+  console.log("[BULK_DELETE] api/v1/projects");
   const idsArr = req.body.ids;
 
   try {
