@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 // const token = require("../models/Token");
-
 const db = require("../db");
 const { registerV, loginV } = require("../utils/validation");
 
@@ -45,9 +44,12 @@ exports.getMember = async (req, res) => {
     const conditions = { id: memberId };
     const member = await db.findOne("members", conditions, fields);
     console.log("get member by id: : ", member);
-    res.send(member);
+    if (member) {
+      return res.send(member);
+    }
+    res.status(404).json({ msg: "User not found" });
   } catch (err) {
-    res.status(500).json({ msg: "cannot retrieve data from db" });
+    res.status(500).json({ msg: "Server error" });
     console.error(err);
   }
 };
@@ -71,7 +73,8 @@ exports.deleteMember = async (req, res) => {
 };
 
 /**
- *
+ * todo: we need to setup cache layer so that not to query db everytime
+ * user info with all teams roles put it into session store: redis
  */
 exports.login = async (req, res) => {
   console.log("[post] [api/users/login] *");

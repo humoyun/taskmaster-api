@@ -1,8 +1,36 @@
 const router = require("express").Router();
 
-router.post("/create", (req, res) => {
-  res.status(201).send({ msg: "project created" });
+const {
+  getProject,
+  getProjects,
+  createProject,
+  updateProject,
+  deleteProject
+} = require("../handlers/projectHandler");
+
+/**
+ *
+ */
+router.get("/", (req, res) => {
+  res.status(201).json({ msg: "project created" });
 });
+
+/**
+ *
+ */
+router.get("/:id", (req, res) => {
+  res.json({ id: "test-id", name: "test-name" });
+});
+
+/**
+ *
+ */
+router.post("/", createProject);
+
+/**
+ *
+ */
+router.put("/:id", updateProject);
 
 module.exports = router;
 

@@ -1,13 +1,4 @@
-const Utils = {};
-
-Utils.isObject = x => x !== null && typeof x === "object";
-Utils.isObjEmpty = obj => Utils.isObject(obj) && Object.keys(obj).length === 0;
-Utils.isObjValuesEmpty = obj =>
-  // eslint-disable-next-line
-  !Utils.isObjEmpty(obj) &&
-  Object.keys(obj)
-    .map(k => obj[k])
-    .some(s => s);
+const Utils = require("../utils/Utils");
 
 /**
  * Convinient abstraction to query one row based on some condition(s)
@@ -67,24 +58,35 @@ exports.insert = (tableName, fields) => {
 };
 
 /**
+ * tableName: `users`
+ * conditions: { id: 'bobby-unique-id', ... }
+ * data: { username: 'Bobby', age: 28, status: 'active', ... }
+ *
  *  "UPDATE members SET field_1 = $1, field_2 = $2, field_3 = $3, ... ( WHERE ...) RETURNING *";
  */
-exports.update = (tableName, cond, data) => {
-  const updates = "";
+exports.update = (tableName, conditions, data) => {
+  const dKeys = Object.keys(data);
+  const dataTuples = dKeys.map((k, index) => `${k} = $${index + 1}`);
+  const updates = dataTuples.join(", ");
   const len = Object.keys(data).length;
 
-  Object.keys(data).forEach((key, index) => {
-    updates += ` ${key} = ${index + 1} `;
-  });
+  let text = `UPDATE ${tableName} SET ${updates} `;
+
+  if (!Utils.isObjEmpty(conditions)) {
+    const keys = Object.keys(conditions);
+    const condTuples = keys.map((k, index) => `${k} = $${index + 1 + len} `);
+    const condPlaceholders = condTuples.join(" AND ");
+
+    text += ` WHERE ${condPlaceholders} RETURNING *`;
+  }
 
   const values = [];
   Object.keys(data).forEach(key => {
     values.push(data[key]);
   });
-
-  let text = `UPDATE ${tableName} SET ${updates}`;
-  if (cond) text += `WHERE ${cond}`;
-  text += " RETURNING *";
+  Object.keys(conditions).forEach(key => {
+    values.push(conditions[key]);
+  });
 
   return { text, values };
 };

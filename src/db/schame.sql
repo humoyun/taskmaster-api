@@ -6,9 +6,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 /*
  *--------------------------------------------------*
  */
-CREATE TYPE status_type AS ENUM ('opened', 'ongoing', 'finished');
+CREATE TYPE status_type AS ENUM ('created', 'started', 'ongoing', 'finished');
 
-CREATE TYPE role_type AS ENUM ('master', 'admin', 'member', 'guest');
+CREATE TYPE role_type AS ENUM ('master', 'owner', 'admin', 'member', 'guest');
 
 CREATE TYPE state_type AS ENUM (
   'new',
@@ -65,6 +65,8 @@ CREATE TABLE members(
   job_title VARCHAR(255),
   location VARCHAR(200),
   verified BOOLEAN DEFAULT false,
+  active BOOLEAN DEFAULT false,
+  deleted BOOLEAN DEFAULT false,
   info JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -81,7 +83,7 @@ CREATE TABLE karmas(
  */
 CREATE TABLE teams(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id uuid REFERENCES members(id) NOT NULL,
+  owner_id uuid REFERENCES members(id) NOT NULL ON DELETE CASCADE,
   name VARCHAR (255),
   description TEXT,
   info json,
@@ -91,37 +93,42 @@ CREATE TABLE teams(
 );
 
 /*
+ *  ON DELETE SET NULL
  *--------------------------------------------------*
  */
 CREATE TABLE team_member_pivot(
   id serial PRIMARY KEY,
-  member_id serial REFERENCES members(id),
+  member_id uuid REFERENCES members(id),
   team_id uuid REFERENCES teams(id),
   role role_type,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(member_id, team_id)
 );
 
 /*
  *--------------------------------------------------*
- */
-CREATE TABLE member_project_pivot(
-  id serial PRIMARY KEY,
-  member_id serial REFERENCES members(id),
-  project_id uuid REFERENCES projects(id),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
-
-/*
+ 
+ CREATE TABLE member_project_pivot(
+ id serial PRIMARY KEY,
+ member_id serial REFERENCES members(id),
+ project_id uuid REFERENCES projects(id),
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ );
+ * /
+ 
+ ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
+ 
+ /*
+ owner_id uuid REFERENCES members(id),
  *--------------------------------------------------*
  */
 CREATE TABLE projects(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id serial REFERENCES members(id),
+  owner_id uuid DEFAULT uuid_generate_v4() REFERENCES members(id) NOT NULL,
+  team_id uuid DEFAULT uuid_generate_v4() REFERENCES teams(id),
   title VARCHAR (255) NOT NULL,
-  status VARCHAR (20) CHECK (status IN ('opened', 'ongoing', 'finished')),
+  status status_type DEFAULT 'created',
   description text,
   starred BOOLEAN DEFAULT false,
   info json,
@@ -129,7 +136,8 @@ CREATE TABLE projects(
   cover_image VARCHAR(255),
   due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(owner_id, title)
 );
 
 /*
@@ -138,9 +146,9 @@ CREATE TABLE projects(
  */
 CREATE TABLE tasks(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
   assignee_id serial REFERENCES members(id),
   reporter_id serial REFERENCES members(id),
-  project_id uuid REFERENCES projects(id),
   subject VARCHAR(255) NOT NULL,
   description TEXT,
   state state_type,
@@ -161,7 +169,7 @@ CREATE TABLE tasks(
  */
 CREATE TABLE comments(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id serial REFERENCES members(id),
+  owner_id serial REFERENCES members(id) ON DELETE CASCADE,
   content TEXT,
   created_at DATE,
   updated_at DATE
@@ -172,7 +180,7 @@ CREATE TABLE comments(
  */
 CREATE TABLE attachs(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  task_id uuid REFERENCES tasks(id),
+  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
   file_url VARCHAR(255),
   content TEXT,
   type VARCHAR(20) CHECK (type IN ('image', 'video', 'doc', 'link')),

@@ -42,6 +42,15 @@ Utils.makeFormFields = function makeFormFields(formFields, file) {
   return formData;
 };
 
+Utils.getNonNullValuesFromObject = obj => {
+  const tmp = {};
+  Object.keys(obj).forEach(key => {
+    if (obj[key] !== null && obj[key] !== undefined) tmp[key] = obj[key];
+  });
+
+  return tmp;
+};
+
 Utils.makeQueryString = function makeQueryString(params) {
   let queryString = "";
 
@@ -310,4 +319,4 @@ String.prototype.replaceAt = function replaceAt(index, replacement) {
 };
 /* eslint-enable no-extend-native */
 
-export default Utils;
+module.exports = Utils;

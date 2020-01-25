@@ -1,6 +1,7 @@
 const { Pool } = require("pg");
 const connection = require("./connection.json");
 const pool = new Pool(connection);
+const Utils = require("../utils/Utils");
 const { insert, select, remove, update } = require("./helpers");
 
 /**
@@ -55,7 +56,7 @@ module.exports = {
   /**
    *
    */
-  create: async (entity, data) => {
+  createOne: async (entity, data) => {
     let resp;
     try {
       const { text, values } = insert(entity, data);
@@ -88,7 +89,7 @@ module.exports = {
       const rs = await pool.query(text, values);
       if (rs) resp = rs.rows[0];
     } catch (err) {
-      console.error(err);
+      throw err;
     }
 
     return resp;
@@ -108,9 +109,10 @@ module.exports = {
       console.log("[deleteOne] >> ", text);
       console.log("[deleteOne] >> ", values);
       const rs = await pool.query(text, values);
-      console.log(rs);
+      console.log(rs.rows);
       if (rs) resp = rs.rows[0];
     } catch (err) {
+      throw new Error("some messagae"); // { err: true, code: err.code };
       console.error(err);
     }
 
@@ -120,12 +122,24 @@ module.exports = {
   /**
    *
    */
-  updateOne: async (table, fields, conditions, cb) => {
+  updateOne: async (entity, conditions, fields, cb) => {
+    if (!entity) throw new Error("no entity table specified");
+    if (Utils.isObjEmpty(conditions))
+      throw new Error("no conditions specified");
+
     let resp;
 
+    const { text, values } = update(entity, conditions, fields);
+
+    console.log(">>>> ", text);
+    console.log(">>>> ", values);
+
     try {
+      rs = await pool.query(text, values);
+      resp = rs.rows[0];
     } catch (err) {
       console.error(err);
+      throw err;
     }
 
     return resp;

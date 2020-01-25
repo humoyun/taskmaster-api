@@ -23,6 +23,8 @@ exports.getTeams = async (req, res) => {
 };
 
 /**
+ * possible errors:
+ * 1. err code: 22P02 `INVALID TEXT REPRESENTATION` [invalid input syntax for type uuid]
  *
  */
 exports.getTeam = async (req, res) => {
@@ -32,21 +34,22 @@ exports.getTeam = async (req, res) => {
 
   try {
     const conditions = { id: teamId };
-    const teams = await db.findOne("teams", conditions, fields);
-    if (teams) {
+    const team = await db.findOne("teams", conditions, fields);
+    if (team) {
       console.log("teams retrieved successfully");
-      return res.status(201).send(teams);
+      return res.json(team);
     }
+    res.status(404).json({ msg: "Team not found" });
   } catch (err) {
     console.error(err);
-    return res.status(500).send({ msg: "db error" });
+    res.status(500).send({ msg: "Server error" });
   }
 };
 
 /**
  * check for error cases postgres
  * https://www.postgresql.org/docs/9.2/errcodes-appendix.html
- * code: 23505 => unique_violation
+ * code: 23505 `UNIQUE VIOLATION` [duplicate key value violates unique constraint]
  *
  *
  */
@@ -56,24 +59,53 @@ exports.createTeam = async (req, res) => {
     const fields = {
       id: uuid.v4(),
       name: req.body.name,
-      owner_id: req.body.ownerId,
+      owner_id: req.user.id,
       description: req.body.description,
       info: req.body.info
     };
 
     console.log("team: ", fields);
 
-    const result = await db.create("teams", fields);
-    console.log("/----------------------------------/");
-    console.log(result);
-    console.log("/----------------------------------/");
-    if (result) {
-      console.log("teams retrieved successfully");
+    const team = await db.createOne("teams", fields);
+
+    if (team) {
+      console.log(`team ${team.name} created successfully`);
       return res.status(201).json(result);
     }
+    res.status(404).json({ msg: "" });
   } catch (err) {
     console.error(err);
-    return res.status(500).send({ msg: "server error" });
+    if (err.code === "23505")
+      return res.status(400).json({ msg: "Team with this name already exist" });
+    res.status(500).send({ msg: "Server error" });
+  }
+};
+/**
+ *
+ */
+exports.updateTeam = async (req, res) => {
+  try {
+    console.log("[PUT]:[api/teams]");
+    const fields = {
+      name: req.body.name,
+      description: req.body.description,
+      info: req.body.info
+    };
+    const teamId = req.params.id;
+
+    const conditions = { id: teamId };
+    const team = await db.updateOne("teams", conditions, fields);
+
+    if (team) {
+      console.log(`team ${team.name} updated successfully`);
+      return res.json(team);
+    }
+    res.status(404).json({ msg: "Bad request" });
+  } catch (err) {
+    console.error(err);
+    if (err.code === "23505")
+      return res.status(400).json({ msg: "Team with this name already exist" });
+    res.status(500).send({ msg: "Server error" });
   }
 };
 
@@ -105,7 +137,3 @@ exports.deleteTeams = async (req, res) => {
     const result = await db.deleteOne("teams", fields);
   } catch (err) {}
 };
-/**
- *
- */
-exports.updateTeam = async (req, res) => {};

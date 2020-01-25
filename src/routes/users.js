@@ -16,16 +16,16 @@ const {
 /**
  * Get all users
  */
-router.get("/all", getMembers);
+router.get("/all", auth, getMembers);
 
 /**
  * Get user by id
  */
-router.get("/:id", getMember);
+router.get("/:id", auth, getMember);
 /**
  * Get user by id
  */
-router.delete("/:id", deleteMember);
+router.delete("/:id", auth, deleteMember);
 
 /**
  * Register a user

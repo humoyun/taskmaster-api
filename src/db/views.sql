@@ -6,6 +6,7 @@ SELECT
   first_name || ' ' || last_name AS fullname,
   location,
   avatar,
+  avatar_thumb,
   last_login
 FROM
   members;
