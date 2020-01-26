@@ -58,12 +58,12 @@ module.exports = Token.instance();
 
 // temporal solution for add helper funcitons in mongooose model(not instance)
 model.createToken = (data, cert, expiresIn) => {
-  const settings = { algorithm: "RS256", issuer: "api" };
+  const options = { algorithm: "RS256", issuer: "api" };
   if (expiresIn !== null && !Number.isNaN(expiresIn)) {
-    settings.expiresIn = expiresIn;
+    options.expiresIn = expiresIn;
   }
 
-  return jwt.sign(data, cert, settings);
+  return jwt.sign(data, cert, options);
 };
 
 model.verifyToken = (token, cert) => jwt.verify(token, cert);

@@ -6,6 +6,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 /*
  *--------------------------------------------------*
  */
+CREATE TYPE media_type AS ENUM ('image', 'video', 'file', 'text');
+
 CREATE TYPE priority_type AS ENUM ('high', 'medium', 'low');
 
 CREATE TYPE status_type AS ENUM ('created', 'started', 'ongoing', 'finished');
@@ -18,14 +20,6 @@ CREATE TYPE state_type AS ENUM (
   'inprogress',
   'resolved',
   'closed'
-);
-
-/*
- *--------------------------------------------------*
- */
-CREATE TABLE role(
-  role_id serial PRIMARY KEY,
-  role_name VARCHAR (255) UNIQUE NOT NULL
 );
 
 /*
@@ -108,20 +102,19 @@ CREATE TABLE team_member_pivot(
   UNIQUE(member_id, team_id)
 );
 
+CREATE TABLE member_project_pivot(
+  id serial PRIMARY KEY,
+  member_id uuid REFERENCES members(id),
+  project_id uuid REFERENCES projects(id),
+  role role_type,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(member_id, project_id)
+);
+
+ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
+
 /*
- *--------------------------------------------------*
- 
- CREATE TABLE member_project_pivot(
- id serial PRIMARY KEY,
- member_id serial REFERENCES members(id),
- project_id uuid REFERENCES projects(id),
- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- );
- * /
- 
- ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
- 
- /*
  owner_id uuid REFERENCES members(id),
  *--------------------------------------------------*
  */
@@ -133,6 +126,7 @@ CREATE TABLE projects(
   status status_type DEFAULT 'created',
   description text,
   starred BOOLEAN DEFAULT false,
+  archived BOOLEAN DEFAULT false,
   info json,
   tags VARCHAR [],
   cover_image VARCHAR(255),

@@ -148,47 +148,6 @@ module.exports = {
   /**
    *
    */
-  createUser: async user => {
-    let resp;
-    // const text1 = `INSERT INTO member (username, email, password, created_at, updated_at, last_login) values($1, $2, $3, $4, $5, $6) RETURNING *`;
-
-    const { text, values } = insert("members", user);
-    console.log(">>>> ", text);
-    console.log(">>>> ", values);
-
-    try {
-      const rs = await pool.query(text, values);
-      console.log("create user: ", rs.rows[0]);
-      resp = rs.rows[0];
-    } catch (err) {
-      console.error(err);
-    }
-
-    return resp;
-  },
-  /**
-   *
-   */
-  updateUser: async user => {
-    let resp;
-    const condition = "";
-    const { text, values } = update(user, "members", condition);
-
-    console.log(">>>> ", text);
-    console.log(">>>> ", values);
-
-    try {
-      resp = await pool.query(text, values);
-    } catch (err) {
-      console.error(err);
-    }
-
-    return resp.rows;
-  },
-
-  /**
-   *
-   */
   findAll: async (entity, conditions, fields) => {
     if (!entity) throw new Error("no entity table specified");
 
@@ -201,7 +160,6 @@ module.exports = {
       console.log(">>>> ", values);
 
       const rs = await pool.query(text, values);
-      console.log("rs: ", rs);
       if (rs) resp = rs.rows;
     } catch (err) {
       throw new Error({ err: true, code: err.code });

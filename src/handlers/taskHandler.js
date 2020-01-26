@@ -9,13 +9,13 @@ const fields = ["*"];
 exports.getTasks = async (req, res) => {
   console.log("[GET] {api/v1/tasks}");
 
-  const conditions = { owner_id: req.user.id };
+  const conditions = {};
 
   try {
-    const teams = await db.findAll("tasks", conditions, fields);
-    if (teams) {
-      console.log("teams retrieved successfully", teams);
-      res.status(200).send(teams);
+    const tasks = await db.findAll("tasks", conditions, fields);
+    if (tasks) {
+      console.log("tasks retrieved successfully");
+      res.json(tasks);
     }
   } catch (err) {
     console.error(err);
@@ -28,23 +28,25 @@ exports.getTasks = async (req, res) => {
  */
 exports.getTask = async (req, res) => {
   console.log("[GET] {api/v1/tasks/:id}");
-  const teamId = req.params.id;
-  console.log("member id: ", teamId);
+  const taskId = req.params.id;
+  console.log("task id: ", taskId);
 
   try {
-    const conditions = { id: teamId };
-    const teams = await db.findOne("tasks", conditions, fields);
-    if (teams) {
-      console.log("teams retrieved successfully");
-      return res.status(201).send(teams);
+    const conditions = { id: taskId };
+    const task = await db.findOne("tasks", conditions, fields);
+    if (task) {
+      console.log("task retrieved successfully");
+      return res.json(task);
     }
+    res.status(404).json({ msg: "Task not found" });
   } catch (err) {
     console.error(err);
-    return res.status(500).send({ msg: "db error" });
+    res.status(500).json({ msg: "Server Error" });
   }
 };
 
 /**
+ * we need either teamid or userId
  * check for error cases postgres
  * https://www.postgresql.org/docs/9.2/errcodes-appendix.html
  * code: 23505 => unique_violation
@@ -62,14 +64,10 @@ exports.createTask = async (req, res) => {
     // check if project and req.user actually belongs to this team
     // if (req.query.teamId) fields.team_id = req.query.teamId;
 
-    console.log("task fields: ", fields);
-
     const task = await db.createOne("tasks", fields);
-    console.log("/----------------------------------/");
-    console.log(task);
-    console.log("/----------------------------------/");
+
     if (task) {
-      console.log("projects retrieved successfully");
+      console.log("task created successfully");
       return res.json(task);
     }
     res.status(400).json({ msg: "some params missing" });
@@ -96,16 +94,13 @@ exports.updateTask = async (req, res) => {
       info: req.body.info
     };
 
-    console.log("team: ", fields);
+    const updatedTask = await db.create("tasks", fields);
 
-    const result = await db.create("tasks", fields);
-    console.log("/----------------------------------/");
-    console.log(result);
-    console.log("/----------------------------------/");
-    if (result) {
+    if (updatedTask) {
       console.log("tasks retrieved successfully");
-      return res.status(201).json(result);
+      return res.status(200).json(updatedTask);
     }
+    res.status(400).json({ msg: "" });
   } catch (err) {
     console.error(err);
     return res.status(500).send({ msg: "server error" });

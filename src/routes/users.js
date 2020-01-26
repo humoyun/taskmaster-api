@@ -46,7 +46,7 @@ router.get("/logout", logout);
  *
  */
 router.patch("/password-reset", passwordReset);
-router.post("/veriy", verify);
+router.post("/verify", verify);
 // router.post('/profile', async (req, res) => {
 
 // })

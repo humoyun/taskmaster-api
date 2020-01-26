@@ -20,7 +20,7 @@ const fields = [
 ];
 
 exports.getMembers = async (req, res) => {
-  console.log("[get] v1/users/all");
+  console.log("[GET] {api/v1/users}");
 
   try {
     const conditions = {};
@@ -37,7 +37,7 @@ exports.getMembers = async (req, res) => {
  *
  */
 exports.getMember = async (req, res) => {
-  console.log("[get] v1/users/:id");
+  console.log("[GET] {api/v1/users/:id}");
   const memberId = req.params.id;
 
   try {
@@ -54,8 +54,11 @@ exports.getMember = async (req, res) => {
   }
 };
 
+/**
+ *
+ */
 exports.deleteMember = async (req, res) => {
-  console.log("[delete] v1/users/:id");
+  console.log("[DELETE] {api/v1/users/:id} ");
   const memberId = req.params.id;
 
   try {
@@ -77,7 +80,7 @@ exports.deleteMember = async (req, res) => {
  * user info with all teams roles put it into session store: redis
  */
 exports.login = async (req, res) => {
-  console.log("[post] [api/users/login] *");
+  console.log("[POST] {api/v1/users/login}");
 
   const { error } = await loginV(req.body);
   if (error) res.status(400).json({ msg: error.details });
@@ -111,7 +114,7 @@ exports.login = async (req, res) => {
     );
 
     res.header("Authorization", token);
-    res.json({ token }).status(200);
+    res.json({ token });
   } catch (err) {
     console.error(err);
   }
@@ -121,7 +124,7 @@ exports.login = async (req, res) => {
  *
  */
 exports.register = async (req, res) => {
-  console.log("* [api/users/register] *");
+  console.log("[POST] {api/v1/users/register}");
 
   const { error } = await registerV(req.body);
 
@@ -135,7 +138,8 @@ exports.register = async (req, res) => {
   const emailExist = await db.findOne("members", conditions, fields);
 
   console.log("emailExist : ", emailExist);
-  if (emailExist) return res.send("Email is already exist").status(400);
+  if (emailExist)
+    return res.status(400).json({ msg: "Email is already exist" });
 
   // salt [hash password]
   const salt = await bcrypt.genSalt(10);
@@ -148,19 +152,57 @@ exports.register = async (req, res) => {
   };
 
   try {
-    const savedUser = await db.createUser(newUser);
+    const savedUser = await db.createOne("members", newUser);
     if (savedUser)
-      res.status(201).json({
+      return res.status(201).json({
         msg: `user ${savedUser.username} created successfully`
       });
+    res.status(400).json({ msg: "Bad request" });
   } catch (err) {
     console.error(err);
-    res.status(400).send(error);
+    res.status(500).json({ msg: "Server error" });
   }
 };
 
-exports.logout = async (req, res) => {};
+exports.logout = async (req, res) => {
+  console.log("[POST] {api/v1/users/verify}");
+  const conditions = {
+    id: req.user.id
+  };
 
-exports.verify = async (req, res) => {};
+  try {
+    const updatedUser = await db.updateOne("members", conditions, {
+      active: false
+    });
 
-exports.passwordReset = async (req, res) => {};
+    if (updatedUser) return res.json({ msg: "User logged out" });
+    res.status(400).json({ msg: "Bad request" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.verify = async (req, res) => {
+  console.log("[POST] {api/v1/users/verify}");
+  const conditions = {};
+
+  if (req.body.email) conditions.email = req.body.email;
+  if (req.body.username) conditions.username = req.body.username;
+
+  try {
+    const updatedUser = await db.updateOne("members", conditions, {
+      verified: true
+    });
+    console.log("---> ", updatedUser);
+    if (updatedUser) return res.json({ msg: "User verified" });
+    res.status(400).json({ msg: "Bad request" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.passwordReset = async (req, res) => {
+  console.log("[POST] {api/v1/users/password-reset}");
+};
