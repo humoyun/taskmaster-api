@@ -7,3 +7,4 @@
 * Triggers: \dy (\df+ more details)
 * Sequences: \ds
 * \dT+: show ENUM types
+* show public indexes: select \* from pg_indexes where schemaname = 'public';

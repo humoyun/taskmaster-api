@@ -18,7 +18,7 @@ module.exports = {
 
     return pool.query(text, params, (err, res) => {
       const duration = Date.now() - start;
-      console.log("executed query", { text, duration, rows: res.rowCount });
+      console.log("[query] : ", { text, duration, rows: res.rowCount });
       callback(err, res);
     });
   },
@@ -58,12 +58,11 @@ module.exports = {
    */
   createOne: async (entity, data) => {
     let resp;
+
     try {
       const { text, values } = insert(entity, data);
-      console.log("[create] >> ", text);
-      console.log("[create] >> ", values);
       const rs = await pool.query(text, values);
-      console.log("create user: ", rs.rows[0]);
+
       resp = rs.rows[0];
     } catch (err) {
       console.error(err);
@@ -106,10 +105,8 @@ module.exports = {
 
     try {
       const { text, values } = remove(entity, conditions, data);
-      console.log("[deleteOne] >> ", text);
-      console.log("[deleteOne] >> ", values);
       const rs = await pool.query(text, values);
-      console.log(rs.rows);
+
       if (rs) resp = rs.rows[0];
     } catch (err) {
       throw new Error("some messagae"); // { err: true, code: err.code };
@@ -128,11 +125,7 @@ module.exports = {
       throw new Error("no conditions specified");
 
     let resp;
-
     const { text, values } = update(entity, conditions, fields);
-
-    console.log(">>>> ", text);
-    console.log(">>>> ", values);
 
     try {
       rs = await pool.query(text, values);
@@ -155,9 +148,6 @@ module.exports = {
 
     try {
       const { text, values } = select(entity, conditions, fields);
-
-      console.log(">>>> ", text);
-      console.log(">>>> ", values);
 
       const rs = await pool.query(text, values);
       if (rs) resp = rs.rows;

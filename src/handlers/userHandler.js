@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 // const token = require("../models/Token");
 const db = require("../db");
 const { registerV, loginV } = require("../utils/validation");
@@ -57,6 +58,48 @@ exports.getMember = async (req, res) => {
 /**
  *
  */
+exports.getMemberTeams = async (req, res) => {
+  console.log("[GET] {api/v1/users/:id/teams}");
+  const memberId = req.params.id;
+
+  try {
+    const conditions = { id: memberId };
+    const member = await db.findOne("members", conditions, fields);
+    console.log("get member by id: : ", member);
+    if (member) {
+      return res.send(member);
+    }
+    res.status(404).json({ msg: "User not found" });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+    console.error(err);
+  }
+};
+
+/**
+ *
+ */
+exports.getMemberProjects = async (req, res) => {
+  console.log("[GET] {api/v1/users/:id/projects}");
+  const memberId = req.params.id;
+
+  try {
+    const conditions = { id: memberId };
+    const member = await db.findOne("members", conditions, fields);
+    console.log("get member by id: : ", member);
+    if (member) {
+      return res.send(member);
+    }
+    res.status(404).json({ msg: "User not found" });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+    console.error(err);
+  }
+};
+
+/**
+ *
+ */
 exports.deleteMember = async (req, res) => {
   console.log("[DELETE] {api/v1/users/:id} ");
   const memberId = req.params.id;
@@ -78,17 +121,20 @@ exports.deleteMember = async (req, res) => {
 /**
  * todo: we need to setup cache layer so that not to query db everytime
  * user info with all teams roles put it into session store: redis
+ * todo: in postgres make trigger to update last_login field make the user active
+ * todo: and do the opposite in logout handler
  */
 exports.login = async (req, res) => {
   console.log("[POST] {api/v1/users/login}");
-
+  let fields;
+  let conditions;
   const { error } = await loginV(req.body);
   if (error) res.status(400).json({ msg: error.details });
 
   // check for user email exists
   try {
-    const fields = ["*"];
-    const conditions = {};
+    fields = ["*"];
+    conditions = {};
 
     if (req.body.email) conditions.email = req.body.email;
     if (req.body.username) conditions.username = req.body.username;
@@ -101,6 +147,16 @@ exports.login = async (req, res) => {
     // salt [hash password]
     const validPsw = await bcrypt.compare(req.body.password, user.password);
     if (!validPsw) return res.status(400).send("Email or password is wrong !!");
+
+    //
+
+    const now = moment().format("YYYY-MM-DD  HH:mm:ss.000");
+    conditions = { id: user.id };
+    fields = { active: true, last_login: now };
+    db.updateOne("members", conditions, fields).then(resp => {
+      console.log("members active & last_login updated");
+      console.log(resp);
+    });
 
     // create token
     const token = jwt.sign(
@@ -153,10 +209,31 @@ exports.register = async (req, res) => {
 
   try {
     const savedUser = await db.createOne("members", newUser);
-    if (savedUser)
+    if (savedUser) {
+      // user should have default project to store tasks
+      const defaultProj = {
+        owner_id: savedUser.id,
+        team_id: null,
+        title: "Default project",
+        status: "created",
+        cover_img: "some_default_url"
+      };
+      // every user have at least one default project
+      // do not block response
+      db.createOne("projects", defaultProj).then(defProject => {
+        if (defProject) {
+          console.log(
+            `default project for user ${defProject.owner_id} created`
+          );
+        }
+      });
+      // we should also insert row into project_member_pivot with appropiate role
+
       return res.status(201).json({
         msg: `user ${savedUser.username} created successfully`
       });
+    }
+
     res.status(400).json({ msg: "Bad request" });
   } catch (err) {
     console.error(err);
@@ -164,6 +241,14 @@ exports.register = async (req, res) => {
   }
 };
 
+/**
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+ */
+exports.refreshToken = (req, res) => {};
+
+/**
+ *
+ */
 exports.logout = async (req, res) => {
   console.log("[POST] {api/v1/users/verify}");
   const conditions = {
@@ -183,6 +268,9 @@ exports.logout = async (req, res) => {
   }
 };
 
+/**
+ *
+ */
 exports.verify = async (req, res) => {
   console.log("[POST] {api/v1/users/verify}");
   const conditions = {};

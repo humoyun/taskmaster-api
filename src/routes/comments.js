@@ -1,13 +1,36 @@
 const router = require("express").Router();
 
+const {
+  getComment,
+  getComments,
+  createComment,
+  updateComment,
+  deleteComment
+} = require("../handlers/commentHandler");
+
 /**
- * always query params: type [project, task], id: [projectId, taskId]
+ * comment and projectid should be sent on the body
  */
-router.get("/", (req, res) => {
-  console.log(req.path);
-  console.log(req.params);
-  console.log(req.query);
-  res.json({ msg: "project/task comment" });
-});
+router.get("/", getComments);
+
+/**
+ * comment and projectid should be sent on the body
+ */
+router.get("/:id", getComment);
+
+/**
+ *
+ */
+router.post("/", createComment);
+
+/**
+ *
+ */
+router.put("/:id", updateComment);
+
+/**
+ *
+ */
+router.delete("/:id", deleteComment);
 
 module.exports = router;

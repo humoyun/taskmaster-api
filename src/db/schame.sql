@@ -79,7 +79,7 @@ CREATE TABLE karmas(
  */
 CREATE TABLE teams(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id uuid REFERENCES members(id) NOT NULL ON DELETE CASCADE,
+  owner_id uuid NOT NULL REFERENCES members(id),
   name VARCHAR (255),
   description TEXT,
   info json,
@@ -127,9 +127,11 @@ CREATE TABLE projects(
   description text,
   starred BOOLEAN DEFAULT false,
   archived BOOLEAN DEFAULT false,
+  deleted BOOLEAN DEFAULT false,
   info json,
   tags VARCHAR [],
-  cover_image VARCHAR(255),
+  cover_img VARCHAR(255),
+  cover_img_thumb VARCHAR(255),
   due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -142,6 +144,7 @@ CREATE TABLE projects(
  */
 CREATE TABLE tasks(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  seq_id serial,
   project_id uuid REFERENCES projects(id) NOT NULL,
   assignee_id uuid REFERENCES members(id),
   reporter_id uuid REFERENCES members(id),
@@ -158,7 +161,8 @@ CREATE TABLE tasks(
   due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(project_id, subject)
+  UNIQUE(subject, project_id),
+  UNIQUE(seq_id, project_id)
 );
 
 /*

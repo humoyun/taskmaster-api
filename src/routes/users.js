@@ -10,7 +10,9 @@ const {
   verify,
   getMembers,
   getMember,
-  deleteMember
+  deleteMember,
+  getMemberTeams,
+  getMemberProjects
 } = require("../handlers/userHandler");
 
 /**
@@ -22,6 +24,16 @@ router.get("/all", auth, getMembers);
  * Get user by id
  */
 router.get("/:id", auth, getMember);
+
+/**
+ * Get user by id
+ */
+router.get("/:id/teams", auth, getMemberTeams);
+
+/**
+ * Get user by id
+ */
+router.get("/:id/projects", auth, getMemberProjects);
 /**
  * Get user by id
  */

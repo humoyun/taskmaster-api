@@ -3,6 +3,8 @@ const router = require("express").Router();
 const {
   getTeams,
   getTeam,
+  getTeamMembers,
+  getTeamProjects,
   createTeam,
   updateTeam,
   deleteTeam
@@ -21,6 +23,16 @@ router.get("/:id", getTeam);
 /*
  *
  */
+router.get("/:id/members", getTeamMembers);
+
+/*
+ *
+ */
+router.get("/:id/projects", getTeamProjects);
+
+/*
+ *
+ */
 router.post("/", createTeam);
 
 /*
@@ -32,20 +44,6 @@ router.put("/:id", updateTeam);
  *
  */
 router.delete("/:id", deleteTeam);
-
-/*
- *
- */
-router.get("/:id/projects", (req, res) => {
-  res.status(201).json({ msg: `get team/:id/projects by ${id}` });
-});
-
-/*
- *
- */
-router.get("/:id/members", (req, res) => {
-  res.status(201).json({ msg: `get team/:id/members by ${id}` });
-});
 
 /*
  *

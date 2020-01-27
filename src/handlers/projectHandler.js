@@ -66,6 +66,14 @@ exports.getProject = async (req, res) => {
 //   "tags": ["backend", "api", "node"]
 // }
 
+exports.getProjectTaks = (req, res) => {
+  console.log("[POST] {api/v1/projects/:id/tasks}");
+};
+
+exports.getProjectComments = (req, res) => {
+  console.log("[POST] {api/v1/projects/:id/tasks}");
+};
+
 exports.createProject = async (req, res) => {
   try {
     console.log("[POST] {api/v1/projects}");

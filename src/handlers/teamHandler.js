@@ -46,6 +46,14 @@ exports.getTeam = async (req, res) => {
   }
 };
 
+exports.getTeamProjects = (req, res) => {
+  console.log("[POST] {api/v1/team/:id/projects}");
+};
+
+exports.getTeamMembers = (req, res) => {
+  console.log("[POST] {api/v1/teams/:id/members}");
+};
+
 /**
  * check for error cases postgres
  * https://www.postgresql.org/docs/9.2/errcodes-appendix.html

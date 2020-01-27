@@ -5,7 +5,9 @@ const {
   getProjects,
   createProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  getProjectTaks,
+  getProjectComments
 } = require("../handlers/projectHandler");
 
 /**
@@ -21,12 +23,23 @@ router.get("/:id", getProject);
 /**
  *
  */
+router.get("/:id/tasks", getProjectTaks);
+
+/**
+ *
+ */
+router.get("/:id/comments", getProjectComments);
+
+/**
+ *
+ */
 router.post("/", createProject);
 
 /**
  *
  */
 router.put("/:id", updateProject);
+
 /**
  *
  */

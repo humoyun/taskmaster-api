@@ -1,21 +1,27 @@
-/* ------------------------------------------ */
-CREATE
-OR REPLACE FUNCTION insert_dates_of_members() RETURNS trigger AS $ func $ BEGIN
-UPDATE
-  members
-SET
-  created_at = now() :: date,
-  updated_at = now() :: date,
-  last_login = now()
-WHERE
-  id = currval('members_id_seq');
+CREATE TRIGGER trigger_name 
+{BEFORE | AFTER | INSTEAD OF} {event [OR ...]}
+   ON table_name
+   [FOR [EACH] {ROW | STATEMENT}]
+       EXECUTE PROCEDURE trigger_function
 
-/* or `id = OLD.id;` */
-RETURN NEW;
+/* ------------------------------------------ */
+CREATE OR REPLACE FUNCTION update_member_last_login() RETURNS trigger AS $func$ 
+  BEGIN
+  SELECT
+    members
+  SET
+    created_at = now() :: date,
+    updated_at = now() :: date,
+    last_login = now()
+  WHERE
+    id = currval('members_id_seq');
+
+  /* or `id = OLD.id;` */
+  RETURN NEW;
 
 END;
 
-$ func $ LANGUAGE plpgsql VOLATILE COST 100;
+$func$ LANGUAGE plpgsql VOLATILE COST 100;
 
 /* ------------------------------------------ */
 CREATE TRIGGER dates_of_members
