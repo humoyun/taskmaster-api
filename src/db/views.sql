@@ -33,8 +33,6 @@ SELECT
   id,
   owner_id,
   name,
-  description,
-  info,
   created_at
 FROM
   teams;

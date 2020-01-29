@@ -144,7 +144,7 @@ CREATE TABLE projects(
  */
 CREATE TABLE tasks(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  seq_id serial,
+  seq_id VARCHAR(20),
   project_id uuid REFERENCES projects(id) NOT NULL,
   assignee_id uuid REFERENCES members(id),
   reporter_id uuid REFERENCES members(id),

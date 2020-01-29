@@ -11,10 +11,10 @@ exports.getTeams = async (req, res) => {
   const conditions = { owner_id: req.user.id };
 
   try {
-    const teams = await db.findAll("teams2", conditions, fields);
+    const teams = await db.findAll("teams", conditions, fields);
     if (teams) {
       console.log("teams retrieved successfully", teams);
-      res.status(200).send(teams);
+      res.json(teams);
     }
   } catch (err) {
     console.error(err);
@@ -48,10 +48,12 @@ exports.getTeam = async (req, res) => {
 
 exports.getTeamProjects = (req, res) => {
   console.log("[POST] {api/v1/team/:id/projects}");
+  res.json(["project_1", "project_2", "project_3"]);
 };
 
 exports.getTeamMembers = (req, res) => {
   console.log("[POST] {api/v1/teams/:id/members}");
+  res.json(["member1", "member_2", "member_3"]);
 };
 
 /**
@@ -78,7 +80,7 @@ exports.createTeam = async (req, res) => {
 
     if (team) {
       console.log(`team ${team.name} created successfully`);
-      return res.status(201).json(result);
+      return res.status(201).json(team);
     }
     res.status(404).json({ msg: "" });
   } catch (err) {
@@ -88,6 +90,7 @@ exports.createTeam = async (req, res) => {
     res.status(500).send({ msg: "Server error" });
   }
 };
+
 /**
  *
  */
@@ -118,6 +121,17 @@ exports.updateTeam = async (req, res) => {
 };
 
 /**
+ * by email
+ */
+exports.inviteMemberToTeam = (req, res) => {};
+/**
+ *
+ */
+exports.removeMemberFromTeam = (req, res) => {};
+
+/****************************************************************************************/
+
+/**
  *
  */
 exports.deleteTeam = async (req, res) => {
@@ -128,9 +142,9 @@ exports.deleteTeam = async (req, res) => {
     const conditions = { id, owner_id };
     console.log("member id: ", conditions);
 
-    const result = await db.deleteOne("teams", conditions, ["*"]);
-
-    res.json(result);
+    const deleted = await db.deleteOne("teams", conditions, ["*"]);
+    if (deleted) return res.json(deleted);
+    res.status(400).json({ msg: "something happenned in deleteTeam" });
   } catch (err) {
     res.status(500).json({ msg: "server error" });
   }
@@ -145,3 +159,7 @@ exports.deleteTeams = async (req, res) => {
     const result = await db.deleteOne("teams", fields);
   } catch (err) {}
 };
+
+/**
+ * --------------------------------------------------------------------
+ */

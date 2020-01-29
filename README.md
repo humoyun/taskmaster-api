@@ -11,7 +11,9 @@ Swagger for documentations
 
 - Supporting all user activities for analytics and user tracking
 - Privacy for projects: public, private, protected
-- Flagged tasks
+- Support for grouping of members by Teams
+- Browser push notifications to increase re-engagement with users
+- Subscribe for task & project updates using websockets (similar to watch in jira)
 - Archived projects/tasks & Backlog
 - File uploading support (Dropbox, Google Drive API Integration)
 - Setting expiration date support for tasks

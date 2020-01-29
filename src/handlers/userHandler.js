@@ -126,6 +126,10 @@ exports.deleteMember = async (req, res) => {
  */
 exports.login = async (req, res) => {
   console.log("[POST] {api/v1/users/login}");
+  console.log("User-Agent: ", req.get("User-Agent"));
+  console.log("Accept-Encoding: ", req.get("Accept-Encoding"));
+  console.log("Content-Encoding: ", req.get("Content-Encoding"));
+
   let fields;
   let conditions;
   const { error } = await loginV(req.body);
@@ -140,6 +144,12 @@ exports.login = async (req, res) => {
     if (req.body.username) conditions.username = req.body.username;
 
     const user = await db.findOne("members", conditions, fields);
+    const teams = await db.findAll(
+      "team_member_pivot",
+      { member_id: user.id },
+      ["team_id", "role"]
+    );
+    console.log("member teams: ", teams);
 
     if (!user)
       return res.status(400).send({ msg: "Email or password is wrong !!" });
@@ -162,7 +172,8 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       {
         id: user.id, // needed for authentication
-        role: "" // needed for authorization
+        teams // needed for authorization
+        // we can also add userAgent
         // exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // 1 day exp
       },
       process.env.TOKEN_SECRET,

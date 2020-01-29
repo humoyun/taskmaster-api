@@ -98,3 +98,27 @@ insert into tasks (id, assignee_id, reporter_id, project_id, description, subjec
 insert into tasks (id, assignee_id, reporter_id, project_id, description, subject, state, priority, flagged, type, check_list) values (98, 1097, 1048, 'e437dc30-f8dd-4c70-a8f4-7c57a1f4fac4', 'Integrated static firmware', 'User-centric', 'resolved', 'medium', true, 'story', null);
 insert into tasks (id, assignee_id, reporter_id, project_id, description, subject, state, priority, flagged, type, check_list) values (99, 1098, 1049, 'bc9b2b5f-b0ca-4229-a1ac-93bf153a36c6', 'User-centric tertiary open system', 'executive', 'inprogress', 'high', true, 'bug', null);
 insert into tasks (id, assignee_id, reporter_id, project_id, description, subject, state, priority, flagged, type, check_list) values (100, 1099, 1049, '9bb273d8-c51c-45f9-842d-e9a1151b8e1f', 'Up-sized scalable neural-net', 'Implemented', 'new', 'medium', true, 'story', null);
+
+
+
+
+insert into
+  tasks (
+    assignee_id,
+    reporter_id,
+    project_id,
+    subject,
+    state,
+    priority,
+    type
+  )
+values
+  (
+    '19e0acec-b7b7-4f99-8f37-ad729fc9e90b',
+    '19e0acec-b7b7-4f99-8f37-ad729fc9e90b',
+    '2dc1c816-4670-4192-ad16-0dddb76bad23',
+    'Graphic Interface',
+    'assigned',
+    'high',
+    'task'
+  );
