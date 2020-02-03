@@ -143,7 +143,7 @@ module.exports = {
    */
   findAll: async (entity, conditions, fields) => {
     if (!entity) throw new Error("no entity table specified");
-
+    console.log("-----db call");
     let resp = [];
 
     try {

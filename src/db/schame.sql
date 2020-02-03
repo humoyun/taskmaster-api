@@ -120,7 +120,7 @@ ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
  */
 CREATE TABLE projects(
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id uuid DEFAULT uuid_generate_v4() REFERENCES members(id) NOT NULL,
+  owner_id uuid REFERENCES members(id) NOT NULL,
   team_id uuid DEFAULT uuid_generate_v4() REFERENCES teams(id),
   title VARCHAR (255) NOT NULL,
   status status_type DEFAULT 'created',
@@ -138,6 +138,20 @@ CREATE TABLE projects(
   UNIQUE(owner_id, title)
 );
 
+/*
+ * -------------------------------------------------- *
+ */
+CREATE TABLE sprints (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  project_id uuid REFERENCES projects(id) NOT NULL,
+  title VARCHAR (255) NOT NULL,
+  info json,
+  tags VARCHAR [],
+  due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(project_id, title)
+)
 /*
  * watchers VARCHAR [] should be added
  *--------------------------------------------------*

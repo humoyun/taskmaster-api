@@ -7,7 +7,7 @@ API is written using Node platform using ExpressJS framework in RESTful architec
 For database, Postgres and MongoDB are used
 Swagger for documentations
 
-### To-do list:
+## To-do list:
 
 - Supporting all user activities for analytics and user tracking
 - Privacy for projects: public, private, protected
@@ -19,11 +19,21 @@ Swagger for documentations
 - Setting expiration date support for tasks
 - many more...
 
-### TEST to-do list:
+## TEST to-do list:
 
 - unit testing
 - integration testing
 - regression testing
 - end-to-end testing
+
+## Refrences
+
+### Internet Resources:
+
+- [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions)
+- [Fractal a nodejs app structure for infinite scale](https://codeburst.io/fractal-a-nodejs-app-structure-for-infinite-scale-d74dda57ee11)
+- [How I structure my node rest apis](https://medium.com/swlh/how-i-structure-my-node-js-rest-apis-4e8904ccd2fb)
+
+### Books:
 
 > **Note:** The **API** is still in development mode.
