@@ -8,7 +8,7 @@ const {
   createTeam,
   updateTeam,
   deleteTeam
-} = require("../handlers/teamHandler");
+} = require("./handler");
 
 /*
  * api/teams/

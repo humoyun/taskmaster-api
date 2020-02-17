@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth");
+const auth = require("../../middlewares/auth");
 // const User = require("../models/User.js");
 
 const {
@@ -13,7 +13,7 @@ const {
   deleteMember,
   getMemberTeams,
   getMemberProjects
-} = require("../handlers/userHandler");
+} = require("./handler");
 
 /**
  * Get all users

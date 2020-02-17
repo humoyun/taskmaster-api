@@ -6,7 +6,7 @@ const {
   createComment,
   updateComment,
   deleteComment
-} = require("../handlers/commentHandler");
+} = require("./handler");
 
 /**
  * comment and projectid should be sent on the body

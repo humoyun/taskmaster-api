@@ -6,7 +6,7 @@ const {
   createTask,
   updateTask,
   deleteTask
-} = require("../handlers/taskHandler");
+} = require("./handler");
 
 /**
  * teamId and projectid should be sent on the body

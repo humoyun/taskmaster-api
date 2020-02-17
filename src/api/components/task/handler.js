@@ -1,6 +1,6 @@
-const db = require("../db");
+const db = require("../../../db");
 const uuid = require("node-uuid");
-const Utils = require("../utils/Utils");
+const Utils = require("../../../utils/Utils");
 
 const fields = ["*"];
 /**

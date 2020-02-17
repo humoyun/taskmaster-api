@@ -8,7 +8,7 @@ const {
   deleteProject,
   getProjectTaks,
   getProjectComments
-} = require("../handlers/projectHandler");
+} = require("./handler");
 
 /**
  *
