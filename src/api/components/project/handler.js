@@ -1,5 +1,6 @@
 const db = require("../../../db");
 const uuid = require("node-uuid");
+// TODO I have to write resolver to resolve path easily : reolvePath('@/utils/Utils')
 const Utils = require("../../../utils/Utils");
 
 const fields = ["*"];
@@ -66,7 +67,7 @@ exports.getProject = async (req, res) => {
 //   "tags": ["backend", "api", "node"]
 // }
 
-exports.getProjectTaks = (req, res) => {
+exports.getProjectTasks = (req, res) => {
   console.log("[POST] {api/v1/projects/:id/tasks}");
 };
 
@@ -80,7 +81,7 @@ exports.createProject = async (req, res) => {
 
     const fields = {
       id: uuid.v4(),
-      team_id: req.query.teamId,
+      team_id: req.query.teamId, // from query params
       owner_id: req.user.id,
       title: req.body.title,
       starred: req.body.starred,

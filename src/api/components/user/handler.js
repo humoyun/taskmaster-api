@@ -42,11 +42,22 @@ exports.getMembers = async (req, res) => {
 exports.getMember = async (req, res) => {
   console.log("[GET] {api/v1/users/:id}");
   const memberId = req.params.id;
+  /**
+   * ! if  user asked with teams then we have make join operation in one request
+   */
+  const withTeams = req.query.teams;
 
   try {
     const conditions = { id: memberId };
     const member = await db.findOne("members", conditions, fields);
+
     console.log("get member by id: : ", member);
+    if (withTeams === "yes") {
+      console.log("withTeams: ", typeof withTeams);
+      const userTeams = await getTeams(memberId);
+      member.teams = userTeams;
+    }
+
     if (member) {
       return res.send(member);
     }
@@ -55,6 +66,24 @@ exports.getMember = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
     console.error(err);
   }
+};
+
+// ! temporary
+const getTeams = async owner_id => {
+  const conditions = { owner_id };
+  const team_fields = ["*"];
+  let rs = [];
+  try {
+    const teams = await db.findAll("teams", conditions, team_fields);
+    if (teams) {
+      console.log("teams retrieved successfully", teams);
+      rs = teams;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  return rs;
 };
 
 /**

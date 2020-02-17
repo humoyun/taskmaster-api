@@ -121,9 +121,32 @@ exports.updateTeam = async (req, res) => {
 };
 
 /**
+ * sysadmin can also add members
+ */
+exports.addMember2Team = async (req, res) => {
+  console.log("[PUT] {api/v1/teams/:id} ");
+  const teamId = req.params.id;
+  const memberId = req.body.memberId;
+  const role = req.body.role;
+
+  try {
+    const conditions = { team_id: teamId, member_id: memberId, role };
+    const dataBack = ["id", "username", "email"];
+
+    const member = await db.addOne("team_member_pivot", conditions, dataBack);
+
+    if (!member)
+      return res.status(404).json({ msg: "User not found by this id" });
+    else res.send(member);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+/**
  * by email
  */
-exports.inviteMemberToTeam = (req, res) => {};
+exports.inviteMemberToTeam = async (req, res) => {};
 /**
  *
  */

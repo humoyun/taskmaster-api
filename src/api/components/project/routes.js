@@ -6,7 +6,7 @@ const {
   createProject,
   updateProject,
   deleteProject,
-  getProjectTaks,
+  getProjectTasks,
   getProjectComments
 } = require("./handler");
 
@@ -23,7 +23,7 @@ router.get("/:id", getProject);
 /**
  *
  */
-router.get("/:id/tasks", getProjectTaks);
+router.get("/:id/tasks", getProjectTasks);
 
 /**
  *
