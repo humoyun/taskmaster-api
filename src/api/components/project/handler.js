@@ -1,7 +1,7 @@
-const db = require("../../../db");
+const db = require("@src/db");
 const uuid = require("node-uuid");
 // TODO I have to write resolver to resolve path easily : reolvePath('@/utils/Utils')
-const Utils = require("../../../utils/Utils");
+const Utils = require("@src/utils/Utils");
 
 const fields = ["*"];
 /**

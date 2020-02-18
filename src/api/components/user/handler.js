@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 // const token = require("../models/Token");
-const db = require("../../../db");
+const db = require("@src/db");
 const { registerV, loginV } = require("./validation");
 
 const fields = [

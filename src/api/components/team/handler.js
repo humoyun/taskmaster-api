@@ -1,4 +1,4 @@
-const db = require("../../../db");
+const db = require("@src/db");
 const uuid = require("node-uuid");
 
 const fields = ["*"];

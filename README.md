@@ -33,6 +33,7 @@ Swagger for documentations
 - [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions)
 - [Fractal a nodejs app structure for infinite scale](https://codeburst.io/fractal-a-nodejs-app-structure-for-infinite-scale-d74dda57ee11)
 - [How I structure my node rest apis](https://medium.com/swlh/how-i-structure-my-node-js-rest-apis-4e8904ccd2fb)
+- [Why you should avoid ORMs (with examples in Node.js)](https://blog.logrocket.com/why-you-should-avoid-orms-with-examples-in-node-js-e0baab73fa5/)
 
 ### Books:
 

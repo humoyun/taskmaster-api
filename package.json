@@ -1,5 +1,5 @@
 {
-  "name": "_node_practice",
+  "name": "task-master-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,13 +8,19 @@
     "test": "jest",
     "test_2": "cross-env NODE_ENV=test jest --testTimeout=10000",
     "start": "nodemon server.js",
-    "pretest": "cross-env NODE_ENV=test npm run migrate:reset"
+    "pretest": "cross-env NODE_ENV=test npm run migrate:reset",
+    "postinstall": "link-module-alias"
   },
   "jest": {
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
+  },
+  "_moduleAliases": {
+    "~root": ".",
+    "@src": "src",
+    "@my_module": "lib/some-file.js"
   },
   "keywords": [],
   "author": "Humoyun Ahmad",
@@ -47,6 +53,7 @@
   "devDependencies": {
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
+    "link-module-alias": "^1.2.0",
     "supertest": "^4.0.2"
   }
 }
