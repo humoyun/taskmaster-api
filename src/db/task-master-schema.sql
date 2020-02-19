@@ -3,16 +3,37 @@
  */
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+
 /*
  *--------------------------------------------------*
  */
-CREATE TYPE media_type AS ENUM ('image', 'video', 'file', 'text');
+CREATE TYPE media_type AS ENUM (
+  'image',
+  'video',
+  'file',
+  'text'
+);
 
-CREATE TYPE priority_type AS ENUM ('high', 'medium', 'low');
+CREATE TYPE priority_type AS ENUM (
+  'high',
+  'medium',
+  'low'
+);
 
-CREATE TYPE status_type AS ENUM ('created', 'started', 'ongoing', 'finished');
+CREATE TYPE status_type AS ENUM (
+  'created',
+  'started',
+  'ongoing',
+  'finished'
+);
 
-CREATE TYPE role_type AS ENUM ('master', 'owner', 'admin', 'member', 'guest');
+CREATE TYPE role_type AS ENUM (
+  'master',
+  'owner',
+  'admin',
+  'member',
+  'guest'
+);
 
 CREATE TYPE state_type AS ENUM (
   'new',
@@ -22,198 +43,210 @@ CREATE TYPE state_type AS ENUM (
   'closed'
 );
 
-/*
- *--------------------------------------------------*
- */
-CREATE TABLE job_title(
-  id serial PRIMARY KEY,
-  title VARCHAR(255) UNIQUE NOT NULL
-);
 
 /*
  *--------------------------------------------------*
  */
-CREATE TABLE company(
+CREATE TABLE job_title (
   id serial PRIMARY KEY,
-  name VARCHAR(255) UNIQUE NOT NULL
+  title varchar(255) UNIQUE NOT NULL
 );
+
 
 /*
  *--------------------------------------------------*
  */
-CREATE TABLE tags(
+CREATE TABLE company (
   id serial PRIMARY KEY,
-  name VARCHAR(50) UNIQUE NOT NULL
+  name varchar(255) UNIQUE NOT NULL
 );
+
 
 /*
  *--------------------------------------------------*
  */
-CREATE TABLE members(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR (50) UNIQUE,
-  email VARCHAR (100) UNIQUE,
-  password VARCHAR (255) NOT NULL,
-  first_name VARCHAR (100),
-  last_name VARCHAR (100),
-  avatar VARCHAR(255),
-  avatar_thumb VARCHAR(255),
-  job_title VARCHAR(255),
+CREATE TABLE tags (
+  id serial PRIMARY KEY,
+  name varchar(50) UNIQUE NOT NULL
+);
+
+
+/*
+ *--------------------------------------------------*
+ */
+CREATE TABLE members (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  username varchar(50) UNIQUE,
+  email varchar(100) UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  first_name varchar(100),
+  last_name varchar(100),
+  avatar varchar(255),
+  avatar_thumb varchar(255),
+  job_title varchar(255),
   location VARCHAR(200),
-  verified BOOLEAN DEFAULT false,
-  active BOOLEAN DEFAULT false,
-  deleted BOOLEAN DEFAULT false,
-  info JSON,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  verified boolean DEFAULT FALSE,
+  active boolean DEFAULT FALSE,
+  deleted boolean DEFAULT FALSE,
+  info json,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  last_login timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE karmas(
+CREATE TABLE karmas (
   id serial PRIMARY KEY,
   id2 serial PRIMARY KEY
 );
 
+
 /*
  *--------------------------------------------------*
  */
-CREATE TABLE teams(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id uuid NOT NULL REFERENCES members(id),
-  name VARCHAR (255),
-  description TEXT,
+CREATE TABLE teams (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  owner_id uuid NOT NULL REFERENCES members (id),
+  name varchar(255),
+  description text,
   info json,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(owner_id, name)
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (owner_id, name)
 );
+
 
 /*
  *  ON DELETE SET NULL
  *--------------------------------------------------*
  */
-CREATE TABLE team_member_pivot(
+CREATE TABLE team_member_pivot (
   id serial PRIMARY KEY,
-  member_id uuid REFERENCES members(id),
-  team_id uuid REFERENCES teams(id),
-  role role_type,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(member_id, team_id)
+  member_id uuid REFERENCES members (id),
+  team_id uuid REFERENCES teams (id),
+  ROLE role_type,
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (member_id, team_id)
 );
 
-CREATE TABLE member_project_pivot(
+CREATE TABLE member_project_pivot (
   id serial PRIMARY KEY,
-  member_id uuid REFERENCES members(id),
-  project_id uuid REFERENCES projects(id),
-  role role_type,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(member_id, project_id)
+  member_id uuid REFERENCES members (id),
+  project_id uuid REFERENCES projects (id),
+  ROLE role_type,
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (member_id, project_id)
 );
 
-ALTER SEQUENCE team_member_pivot_id_seq RESTART WITH 10000 INCREMENT BY 5;
+ALTER SEQUENCE team_member_pivot_id_seq
+  RESTART WITH 10000 INCREMENT BY 5;
+
 
 /*
  owner_id uuid REFERENCES members(id),
  *--------------------------------------------------*
  */
-CREATE TABLE projects(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id uuid REFERENCES members(id) NOT NULL,
-  team_id uuid DEFAULT uuid_generate_v4() REFERENCES teams(id),
-  title VARCHAR (255) NOT NULL,
+CREATE TABLE projects (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  owner_id uuid REFERENCES members (id) NOT NULL,
+  team_id uuid REFERENCES teams (id),
+  title varchar(255) NOT NULL,
   status status_type DEFAULT 'created',
   description text,
-  starred BOOLEAN DEFAULT false,
-  archived BOOLEAN DEFAULT false,
-  deleted BOOLEAN DEFAULT false,
+  starred boolean DEFAULT FALSE,
+  archived boolean DEFAULT FALSE,
+  deleted boolean DEFAULT FALSE,
   info json,
-  tags VARCHAR [],
-  cover_img VARCHAR(255),
-  cover_img_thumb VARCHAR(255),
-  due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(owner_id, title)
+  tags varchar[],
+  cover_img varchar(255),
+  cover_img_thumb varchar(255),
+  due_at timestamp DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (owner_id, title)
 );
+
 
 /*
  * -------------------------------------------------- *
  */
 CREATE TABLE sprints (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  project_id uuid REFERENCES projects(id) NOT NULL,
-  title VARCHAR (255) NOT NULL,
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  project_id uuid REFERENCES projects (id) NOT NULL,
+  title varchar(255) NOT NULL,
   info json,
-  tags VARCHAR [],
-  due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(project_id, title)
-)
+  tags varchar[],
+  due_at timestamp DEFAULT CURRENT_TIMESTAMP CHECK (due_at >= created_at),
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (project_id, title))
 /*
  * watchers VARCHAR [] should be added
  *--------------------------------------------------*
  */
-CREATE TABLE tasks(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  seq_id VARCHAR(20),
-  project_id uuid REFERENCES projects(id) NOT NULL,
-  assignee_id uuid REFERENCES members(id),
-  reporter_id uuid REFERENCES members(id),
-  subject VARCHAR(255) NOT NULL,
-  description TEXT,
+CREATE TABLE tasks (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  seq_id varchar(20),
+  project_id uuid REFERENCES projects (id) NOT NULL,
+  assignee_id uuid REFERENCES members (id),
+  reporter_id uuid REFERENCES members (id),
+  subject varchar(255) NOT NULL,
+  description text,
   state state_type DEFAULT 'new',
   priority priority_type DEFAULT NULL,
-  type VARCHAR (10) CHECK (type IN ('bug', 'task', 'story')),
-  flagged BOOLEAN DEFAULT false,
-  tags VARCHAR [],
+  type VARCHAR(10) CHECK (TYPE IN ('bug', 'task', 'story')),
+  flagged boolean DEFAULT FALSE,
+  tags varchar[],
   info json,
   todo_list json,
-  cover_image VARCHAR(255),
-  due_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(subject, project_id),
-  UNIQUE(seq_id, project_id)
+  cover_image varchar(255),
+  due_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (subject, project_id),
+  UNIQUE (seq_id, project_id)
 );
+
 
 /*
  * it might contain @mentions [] field which is reference to other memners /
  *--------------------------------------------------*
  */
-CREATE TABLE comments(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  owner_id serial REFERENCES members(id) ON DELETE CASCADE,
-  content TEXT,
-  created_at DATE,
-  updated_at DATE
+CREATE TABLE comments (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  owner_id serial REFERENCES members (id) ON DELETE CASCADE,
+  content text,
+  created_at date,
+  updated_at date
 );
+
 
 /*
  *--------------------------------------------------*
  */
-CREATE TABLE attachs(
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
-  file_url VARCHAR(255),
-  content TEXT,
-  type VARCHAR(20) CHECK (type IN ('image', 'video', 'doc', 'link')),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE attachs (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  task_id uuid REFERENCES tasks (id) ON DELETE CASCADE,
+  file_url varchar(255),
+  content text,
+  type VARCHAR(20) CHECK (TYPE IN ('image', 'video', 'doc', 'link')),
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
 
 /*
  *--------------------------------------------------*
  */
 CREATE TABLE task_history (
-  id uuid DEFAULT uuid_generate_v4(),
+  id uuid DEFAULT uuid_generate_v4 (),
   member_id uuid,
-  operation VARCHAR(255),
-  prev_state VARCHAR(255),
+  operation varchar(255),
+  prev_state varchar(255),
   /*  */
-  created_at timestamp default current_timestamp
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
 
 /*
  *--------------------------------------------------*
@@ -275,5 +308,4 @@ CREATE TABLE task_history (
  END IF;
  END;
  $$ LANGUAGE plpgsql;
- 
  */

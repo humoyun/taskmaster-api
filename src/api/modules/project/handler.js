@@ -25,24 +25,47 @@ exports.getProjects = async (req, res) => {
 };
 
 /**
+ * 1. check whether project exists with this id
+ * 2. get role of member for this project [owner, admin, member]
+ *    project_id, team_id, member_id = currently logged in user
+ * 3.
+ *
+ * select p.id, p.title, p.team_id, pivot.team_id, pivot.member_id, pivot.role from projects p
+ * left join team_member_pivot pivot on p.team_id = pivot.team_id where pivot.member_id = sess.user.id  AND p.id = project_id;
+ *
+ * table1 = ('table_name', 'fields', conditions)
+ * table2 = ('table_name', 'fields', conditions)
+ *
+ * findByJoin(type{left,right,inner,outer}, table1, table2)
  *
  */
 exports.getProject = async (req, res) => {
   console.log("[GET] {api/v1/projects/:id}");
-  const teamId = req.query.teamId;
+  const id = req.params.id; // user supplied
+  const teamId = req.body.teamId; // user supplied
+  const memberId = req.user.id; // from session data
   console.log("member id: ", teamId);
 
+  // join table project on pivot_member_team on project.team_id === team.id
+
   try {
-    const conditions = {
-      id: req.params.id,
-      owner_id: req.user.id
-      // team_id: teamId
+    const joinCond = { team_id: teamId };
+    const project = { table: "projects", fields: ["*"], conds: { id } };
+    const teamMemberPivot = {
+      table: "team_member_pivot",
+      fields: ["role"],
+      conds: {
+        member_id: memberId
+      }
     };
 
-    const project = await db.findOne("projects", conditions, fields);
-    if (project) {
+    const resp = await db.findByJoin([project, teamMemberPivot], joinCond);
+    if (resp) {
       console.log("teams retrieved successfully");
-      return res.json(project);
+      //  maybe can be handled in authorization,
+      // if (project.owner_id !== memberId)
+      //   return res.status(401).json({ msg: "Unauthorized" });
+      return res.json(resp);
     }
     res.status(404).json({ msg: "not found" });
   } catch (err) {

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment");
 // const token = require("../models/Token");
 const db = require("@src/db");
+const User = require("@repo/User");
 const { registerV, loginV } = require("./validation");
 
 const fields = [

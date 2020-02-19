@@ -2,11 +2,11 @@ const express = require("express");
 const auth = require("./api/middlewares/auth");
 const router = express.Router();
 
-const usersRouter = require("./api/components/user/routes");
-const teamsRouter = require("./api/components/team/routes");
-const projectsRouter = require("./api/components/project/routes");
-const tasksRouter = require("./api/components/task/routes");
-const comsmentsRouter = require("./api/components/comment/routes");
+const usersRouter = require("./api/modules/user/routes");
+const teamsRouter = require("./api/modules/team/routes");
+const projectsRouter = require("./api/modules/project/routes");
+const tasksRouter = require("./api/modules/task/routes");
+const comsmentsRouter = require("./api/modules/comment/routes");
 
 /**
  *

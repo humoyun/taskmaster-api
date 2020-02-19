@@ -143,12 +143,47 @@ module.exports = {
    */
   findAll: async (entity, conditions, fields) => {
     if (!entity) throw new Error("no entity table specified");
-    console.log("-----db call");
+    console.log("-----db findAll");
     let resp = [];
 
     try {
       const { text, values } = select(entity, conditions, fields);
 
+      const rs = await pool.query(text, values);
+      if (rs) resp = rs.rows;
+    } catch (err) {
+      throw new Error({ err: true, code: err.code });
+    }
+
+    return resp;
+  },
+
+  /**
+   * only supports at most 5 table joins
+   * select p.id, p.title, p.team_id, pivot.team_id, pivot.member_id, pivot.role from projects p
+   * left join team_member_pivot pivot on p.team_id = pivot.team_id where pivot.member_id = sess.user.id  AND p.id = project_id;
+   *
+    const joinCond = { team_id: teamId };
+    const project = { table: "projects", fields: ["*"], conds: { id } };
+    const project = {
+      table: "team_member_pivot",
+      fields: ["role"],
+      conds: {
+        member_id: memberId
+      }
+    };
+   */
+  findByJoin: async (tables, joinCondition) => {
+    let resp = [];
+    const len = tables.length;
+    const shorts = "abcdf".substr(0, len).split("");
+
+    const names = tables.map((t, i) => ({ [t.table]: shorts[i] }));
+
+    try {
+      //  const { text, values } = select(entity, conditions, fields);
+      const text = "";
+      const values = "";
       const rs = await pool.query(text, values);
       if (rs) resp = rs.rows;
     } catch (err) {

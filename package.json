@@ -20,6 +20,7 @@
   "_moduleAliases": {
     "~root": ".",
     "@src": "src",
+    "@repo": "src/api/repository",
     "@my_module": "lib/some-file.js"
   },
   "keywords": [],
