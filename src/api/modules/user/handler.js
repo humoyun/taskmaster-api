@@ -6,6 +6,11 @@ const db = require("@src/db");
 const User = require("@repo/User");
 const { registerV, loginV } = require("./validation");
 
+/* https://randomuser.me/api/portraits/men/{1..70}.jpg */
+/* https://i.pravatar.cc/{100...1000}?img={1..70} */
+/* https://picsum.photos */
+/* ALTER SEQUENCE members_id_seq RESTART WITH 1000 */
+
 const fields = [
   "id",
   "username",

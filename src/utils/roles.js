@@ -6,14 +6,14 @@ const roles = {
   master: {
     can: ["read", "write", "manage"]
   },
+  owner: {
+    can: ["read", "write"]
+  },
   admin: {
     can: ["read", "write"]
   },
   member: {
     can: ["read", "write"]
-  },
-  guest: {
-    can: ["read"]
   }
 };
 

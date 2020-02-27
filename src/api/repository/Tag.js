@@ -1,6 +1,8 @@
 class Tag {
   constructor() {
-    this.name = "";
+    this.id = "unique-tag-id"; // primary
+    this.title = "tag-1";
+    this.createdAt = new Date().toISOString();
   }
 }
 
