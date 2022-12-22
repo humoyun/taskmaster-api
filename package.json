@@ -39,7 +39,7 @@
     "express-session": "^1.17.0",
     "gm": "^1.23.1",
     "helmet": "^3.21.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "mongoose": "^5.7.7",
